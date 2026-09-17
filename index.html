@@ -19,7 +19,6 @@
 const CONFIG = {
   FORM_ID: "1FAIpQLSdNOrORFRdaxFgruRX61VjgvxJo7WX9vmOBLQI_NsaERdH1Ww",
 
-  // IDS EXATOS EXTRAÍDOS DO SEU FORMULÁRIO
   ENTRY_CODIGO:   "entry.1717891624",   
   ENTRY_CORREDOR: "entry.526746113",   
 
@@ -109,7 +108,6 @@ main{flex:1;padding:16px 16px 6px}
 .bipe.erro input{border-color:var(--vermelho);animation:tremer .28s}
 @keyframes tremer{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
-/* BOTÃO DE ENVIAR */
 .btn-enviar-tela {
   width: 100%;
   background: var(--amarelo);
@@ -222,7 +220,6 @@ iframe.oculto{position:absolute;width:0;height:0;border:0;visibility:hidden}
       <span class="laser"></span>
     </div>
     
-    <!-- BOTÃO DE ENVIAR NA TELA -->
     <button id="btnEnviar" class="btn-enviar-tela">ENVIAR CÓDIGO</button>
     
     <p class="msg" id="msg"></p>
@@ -421,7 +418,6 @@ function processar(){
 
   if (!corredor){ $("codigo").value = ""; return recusar("Escolha o corredor antes de bipar."); }
 
-  // Separação automática inteligente para rajadas de bipes colados
   let codigosFinais = [];
   
   textoBruto.split(/\s+/).forEach(pedaco => {
@@ -459,7 +455,6 @@ function focar(){
   if (document.activeElement !== i) i.focus({preventScroll:true});
 }
 
-// Ações do Botão Enviar e do Enter do leitor a laser
 $("btnEnviar").addEventListener("click", () => {
   processar();
 });
@@ -503,7 +498,6 @@ document.addEventListener("keydown", e => {
 window.addEventListener("online", escoarFila);
 window.addEventListener("offline", () => toast("Sem rede — bipes ficam na fila", "aviso"));
 
-/* ---------- INICIALIZAÇÃO ---------- */
 montarCorredores();
 pintarSom();
 historico = ler("wt_historico", []);
