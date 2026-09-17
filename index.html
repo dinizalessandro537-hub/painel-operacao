@@ -18,7 +18,6 @@
             height: 100vh;
             overflow: hidden;
         }
-        /* Menu Lateral Estilo Mercado Livre */
         aside {
             width: 240px;
             background-color: #1e1e1e;
@@ -29,7 +28,7 @@
         }
         aside h2 {
             font-size: 18px;
-            color: #ffe600; /* Amarelo Mercado Livre */
+            color: #ffe600;
             margin-bottom: 25px;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -51,7 +50,6 @@
             background-color: #ffe600;
             color: #121212;
         }
-        /* Área Principal */
         main {
             flex: 1;
             display: flex;
@@ -74,7 +72,6 @@
             justify-content: center;
             align-items: flex-start;
         }
-        /* Cartão do Formulário */
         .panel-card {
             background: #212121;
             width: 100%;
@@ -169,7 +166,6 @@
             font-weight: bold;
         }
 
-        /* Responsivo para Celular / Handheld */
         @media (max-width: 768px) {
             body {
                 flex-direction: column;
@@ -203,13 +199,11 @@
 </head>
 <body>
 
-    <!-- Menu Lateral / Superior no Mobile -->
     <aside>
         <h2>⚡ WT T1</h2>
         <a href="#" class="menu-link active">📦 Registrar Perdas</a>
     </aside>
 
-    <!-- Área Principal -->
     <main>
         <header>Painel de Operações - Perdas Packing T1</header>
         <div class="content">
@@ -217,13 +211,11 @@
             <div class="panel-card">
                 <form id="form-perdas" onsubmit="enviarDados(event)">
                     
-                    <!-- Campo de Bipagem com Espaçamento Automático Inteligente para MELI -->
                     <div class="form-group">
                         <label>🔴 Digite ou Bipe a MELI ou EAN:</label>
-                        <textarea id="campo-bip" placeholder="Bipe os códigos aqui. Os códigos MELI grudados serão separados automaticamente..." required></textarea>
+                        <textarea id="campo-bip" placeholder="Bipe os códigos aqui. Serão separados automaticamente..." required></textarea>
                     </div>
 
-                    <!-- Seleção de Corredores -->
                     <div class="form-group">
                         <label>📍 QUAL CORREDOR:</label>
                         <div class="corredores-grid">
@@ -236,7 +228,6 @@
                         </div>
                     </div>
 
-                    <!-- Botão de Envio -->
                     <button type="submit" class="btn-enviar" id="btn-texto">Registrar Perdas</button>
                     
                     <div id="mensagem-sucesso">✅ Perdas registradas com sucesso!</div>
@@ -247,21 +238,22 @@
     </main>
 
     <script>
-        // Mágica Inteligente de Quebra de Linha para Códigos MELI Colados
         const textarea = document.getElementById('campo-bip');
 
+        // Quebra automática universal para qualquer código colado ou rajada de bip
         textarea.addEventListener('input', function() {
             let texto = this.value;
             
-            // Procura por 4 letras seguidas de números (padrão MELI) e força uma quebra de linha antes da próxima letra se estiverem colados
-            let textoFormatado = texto.replace(/([A-Z]{4}\d+)([A-Z]{4})/g, '$1\n$2');
+            // Remove espaços extras indesejados e quebra qualquer bloco grudado de 9 a 14 caracteres (padrão MELI/EAN)
+            let textoFormatado = texto
+                .replace(/\s+/g, '\n') // Substitui espaços vazios por quebra de linha
+                .replace(/([A-Z0-9]{9,14})(?=[A-Z0-9])/g, '$1\n'); // Força quebra entre blocos colados de etiquetas
 
             if (texto !== textoFormatado) {
                 this.value = textoFormatado;
             }
         });
 
-        // Destaque visual nos botões de corredor selecionados
         document.querySelectorAll('.corredor-opcao').forEach(label => {
             label.addEventListener('click', function() {
                 document.querySelectorAll('.corredor-opcao').forEach(l => l.classList.remove('selected'));
@@ -270,7 +262,6 @@
             });
         });
 
-        // Função de Envio em segundo plano
         function enviarDados(event) {
             event.preventDefault();
             
@@ -289,7 +280,7 @@
             btn.innerText = "Enviando...";
             btn.disabled = true;
 
-            let formUrl = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSdNOrORFRdaxFgruRX61VjgvxJo7WX9vmOBLQI_NsaERdH1Ww/formResponse";
+            let formUrl = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSdNOrORFRdaxFgruRX61VjgvxJo7WX9vmOBLQI_NsaERdH1Ww/viewform?embedded=true".replace('/viewform?embedded=true', '/formResponse');
             
             let formData = new FormData();
             formData.append("entry.SEU_CAMPO_TEXTO", codigos); 
