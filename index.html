@@ -1,311 +1,520 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WT T1 - Painel de Operações</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background-color: #121212;
-            color: #e0e0e0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-        aside {
-            width: 240px;
-            background-color: #1e1e1e;
-            border-right: 1px solid #333;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-        }
-        aside h2 {
-            font-size: 18px;
-            color: #ffe600;
-            margin-bottom: 25px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .menu-link {
-            display: block;
-            color: #bbb;
-            text-decoration: none;
-            padding: 12px 15px;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            transition: 0.2s;
-            font-weight: 500;
-        }
-        .menu-link:hover, .menu-link.active {
-            background-color: #ffe600;
-            color: #121212;
-        }
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: #181818;
-            overflow-y: auto;
-        }
-        header {
-            background-color: #1e1e1e;
-            padding: 15px 30px;
-            border-bottom: 1px solid #333;
-            font-size: 18px;
-            font-weight: bold;
-            color: #fff;
-        }
-        .content {
-            flex: 1;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        .panel-card {
-            background: #212121;
-            width: 100%;
-            max-width: 650px;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-            border: 1px solid #333;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: #ffe600;
-            margin-bottom: 8px;
-        }
-        textarea {
-            width: 100%;
-            height: 150px;
-            background-color: #121212;
-            border: 2px solid #444;
-            border-radius: 6px;
-            color: #fff;
-            padding: 12px;
-            font-size: 16px;
-            resize: none;
-            outline: none;
-            transition: 0.2s;
-        }
-        textarea:focus {
-            border-color: #ffe600;
-        }
-        .corredores-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .corredor-opcao {
-            background-color: #121212;
-            border: 2px solid #444;
-            padding: 10px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            transition: 0.2s;
-            color: #fff;
-        }
-        .corredor-opcao:hover {
-            border-color: #777;
-        }
-        .corredor-opcao input {
-            accent-color: #ffe600;
-            transform: scale(1.1);
-        }
-        .corredor-opcao.selected {
-            border-color: #ffe600;
-            background-color: rgba(255, 230, 0, 0.08);
-        }
-        .btn-enviar {
-            width: 100%;
-            background-color: #ffe600;
-            color: #121212;
-            border: none;
-            padding: 14px;
-            font-size: 15px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .btn-enviar:hover {
-            background-color: #e6cf00;
-        }
-        #mensagem-sucesso {
-            display: none;
-            margin-top: 15px;
-            padding: 12px;
-            background-color: rgba(40, 167, 69, 0.2);
-            border: 1px solid #28a745;
-            color: #28a745;
-            text-align: center;
-            border-radius: 6px;
-            font-weight: bold;
-        }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Perdas WT · Packing T1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
 
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-                overflow: auto;
-            }
-            aside {
-                width: 100%;
-                padding: 10px 15px;
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-            }
-            aside h2 {
-                margin-bottom: 0;
-                font-size: 15px;
-            }
-            .menu-link {
-                display: inline-block;
-                margin-bottom: 0;
-                padding: 8px 12px;
-                font-size: 13px;
-            }
-            .content {
-                padding: 10px;
-            }
-            .corredores-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<script>
+/* =========================================================
+   CONFIGURAÇÃO DA OPERAÇÃO - WT PACKING T1
+   ========================================================= */
+const CONFIG = {
+  FORM_ID: "1FAIpQLSdNOrORFRdaxFgruRX61VjgvxJo7WX9vmOBLQI_NsaERdH1Ww",
+
+  // IDS EXATOS EXTRAÍDOS DO SEU FORMULÁRIO
+  ENTRY_CODIGO:   "entry.1717891624",   
+  ENTRY_CORREDOR: "entry.526746113",   
+
+  CORREDORES: [
+    "CORREDOR 1 (MACHINE)",
+    "CORREDOR 2",
+    "CORREDOR 3",
+    "CORREDOR 4",
+    "CORREDOR 5 (ULTIMO)",
+    "REJEITO"
+  ],
+
+  MIN_CARACTERES: 4,    
+  PAUSA_COLETOR: 90,    
+  ANTI_DUPLICADO: 1500, 
+  SOM: true,
+  VIBRAR: true
+};
+</script>
+
+<style>
+:root{
+  --amarelo:#FFE600; --amarelo-2:#E6CF00;
+  --preto:#0E0E0E; --preto-2:#1A1A1A; --preto-3:#242424;
+  --borda:#343434; --texto:#F5F5F5; --fraco:#8E8E8E;
+  --verde:#00C853; --vermelho:#FF4444;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:Roboto,-apple-system,"Segoe UI",sans-serif;
+  background:var(--preto);color:var(--texto);font-size:16px;line-height:1.4;
+  overscroll-behavior:none;
+}
+button,input{font-family:inherit;font-size:inherit;color:inherit}
+button{border:none;background:none;cursor:pointer}
+:focus-visible{outline:3px solid var(--amarelo);outline-offset:2px}
+
+.tela{
+  max-width:600px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+
+.topo{
+  background:var(--amarelo);color:#000;
+  padding:calc(10px + env(safe-area-inset-top)) 16px 10px;
+  display:flex;align-items:center;gap:10px;
+}
+.marca{width:32px;height:32px;border-radius:8px;background:#000;display:grid;place-items:center;font-size:16px;flex:none}
+.topo h1{font-size:14.5px;font-weight:900;letter-spacing:-.2px;line-height:1.15}
+.topo .sub{font-size:11px;font-weight:500;opacity:.6;letter-spacing:.4px}
+.wt{margin-left:auto;background:#000;color:var(--amarelo);font-size:11.5px;font-weight:900;
+    padding:5px 10px;border-radius:6px;letter-spacing:1.2px;flex:none}
+.sino{background:#000;color:var(--amarelo);width:32px;height:32px;border-radius:8px;
+      display:grid;place-items:center;font-size:14px;flex:none}
+.sino[aria-pressed="false"]{background:rgba(0,0,0,.18);color:rgba(0,0,0,.5)}
+
+.barra-corredor{
+  background:var(--preto-2);border-bottom:1px solid var(--borda);
+  padding:9px 16px;display:flex;align-items:center;gap:9px;font-size:12.5px;
+}
+.barra-corredor .ponto{width:9px;height:9px;border-radius:50%;background:#555;flex:none}
+.barra-corredor.ativa .ponto{background:var(--verde);box-shadow:0 0 8px var(--verde)}
+.barra-corredor.rejeito .ponto{background:var(--vermelho);box-shadow:0 0 8px var(--vermelho)}
+.barra-corredor b{font-weight:700;color:var(--amarelo)}
+.barra-corredor.rejeito b{color:var(--vermelho)}
+.barra-corredor .fila{margin-left:auto;color:var(--fraco);font-size:11.5px}
+
+main{flex:1;padding:16px 16px 6px}
+.rotulo{font-size:11.5px;font-weight:700;color:var(--fraco);letter-spacing:.7px;margin-bottom:8px}
+.rotulo i{color:var(--amarelo);font-style:normal}
+
+.bipe{position:relative}
+.bipe input{
+  width:100%;background:var(--preto-2);border:2px solid var(--borda);border-radius:14px;
+  padding:22px 56px 22px 18px;
+  font-family:"Roboto Mono",monospace;font-size:22px;font-weight:700;letter-spacing:1.5px;
+}
+.bipe input::placeholder{font-family:Roboto,sans-serif;font-size:15px;font-weight:400;letter-spacing:0;color:#5E5E5E}
+.bipe input:focus{border-color:var(--amarelo);background:#1F1F1F;outline:none}
+.bipe .laser{
+  position:absolute;right:16px;top:50%;transform:translateY(-50%);
+  width:22px;height:2px;background:var(--vermelho);border-radius:2px;
+  box-shadow:0 0 10px var(--vermelho);opacity:.75;
+}
+.bipe.pronto input{border-color:#4A4A4A}
+.bipe.erro input{border-color:var(--vermelho);animation:tremer .28s}
+@keyframes tremer{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* BOTÃO DE ENVIAR */
+.btn-enviar-tela {
+  width: 100%;
+  background: var(--amarelo);
+  color: #000;
+  border-radius: 12px;
+  padding: 15px;
+  font-weight: 900;
+  font-size: 15px;
+  margin-top: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 10px rgba(255, 230, 0, 0.15);
+  transition: 0.1s;
+}
+.btn-enviar-tela:active {
+  background: var(--amarelo-2);
+  transform: scale(0.98);
+}
+
+.dica{font-size:11.5px;color:#5E5E5E;margin-top:8px;text-align:center}
+.msg{font-size:13px;font-weight:500;margin-top:9px;display:none}
+.msg.ver{display:block}
+.msg.ruim{color:var(--vermelho)}
+
+.corredores{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:20px}
+.corredor{
+  background:var(--preto-2);border:2px solid var(--borda);border-radius:12px;
+  padding:14px 12px;display:flex;align-items:center;gap:10px;min-height:62px;text-align:left;
+}
+.corredor .n{width:28px;height:28px;border-radius:8px;background:var(--preto-3);
+  display:grid;place-items:center;font-weight:900;font-size:14px;color:var(--fraco);flex:none}
+.corredor .t{font-size:13.5px;font-weight:500;line-height:1.2}
+.corredor .t small{display:block;font-size:10.5px;color:var(--fraco);font-weight:400;margin-top:2px}
+.corredor:active{background:var(--preto-3)}
+.corredor[aria-pressed="true"]{background:var(--amarelo);border-color:var(--amarelo);color:#000}
+.corredor[aria-pressed="true"] .n{background:#000;color:var(--amarelo)}
+.corredor[aria-pressed="true"] .t small{color:rgba(0,0,0,.6)}
+.corredor.rej[aria-pressed="true"]{background:var(--vermelho);border-color:var(--vermelho);color:#fff}
+.corredor.rej[aria-pressed="true"] .n{background:rgba(0,0,0,.3);color:#fff}
+.corredor.rej[aria-pressed="true"] .t small{color:rgba(255,255,255,.75)}
+
+.placar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:20px}
+.placar div{background:var(--preto-2);border:1px solid var(--borda);border-radius:11px;padding:12px 10px;text-align:center}
+.placar .v{font-size:23px;font-weight:900;font-family:"Roboto Mono",monospace;color:var(--amarelo);line-height:1}
+.placar .l{font-size:9.5px;color:var(--fraco);font-weight:700;letter-spacing:.5px;margin-top:5px}
+
+.hist{margin-top:20px}
+.hist h2{font-size:11.5px;font-weight:700;color:var(--fraco);letter-spacing:.7px;
+  margin-bottom:9px;display:flex;justify-content:space-between;align-items:center}
+.hist h2 button{font-size:11px;color:var(--fraco);font-weight:500;padding:4px}
+.item{display:flex;align-items:center;gap:11px;background:var(--preto-2);
+  border:1px solid var(--borda);border-radius:10px;padding:11px 13px;margin-bottom:6px}
+.item.espera{border-color:#6B5400;background:#231C00}
+.item .st{font-size:14px;flex:none}
+.item .cod{font-family:"Roboto Mono",monospace;font-weight:700;font-size:14px;letter-spacing:.5px}
+.item .cor{font-size:11px;color:var(--fraco);margin-top:2px}
+.item .hora{margin-left:auto;font-size:11px;color:var(--fraco);font-family:"Roboto Mono",monospace;flex:none}
+.nada{color:#4F4F4F;font-size:12.5px;text-align:center;padding:20px 0}
+
+.flash{
+  position:fixed;inset:0;z-index:70;pointer-events:none;opacity:0;
+  background:var(--verde);transition:opacity .09s ease-out;
+}
+.flash.ver{opacity:.32}
+.flash.ruim{background:var(--vermelho)}
+.toast{
+  position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));
+  transform:translateX(-50%) translateY(150%);
+  background:var(--verde);color:#042612;font-weight:900;font-size:14.5px;
+  padding:14px 22px;border-radius:12px;z-index:80;
+  box-shadow:0 10px 30px rgba(0,0,0,.6);transition:transform .18s cubic-bezier(.2,.9,.3,1.3);
+  display:flex;align-items:center;gap:8px;max-width:92vw;
+}
+.toast .c{font-family:"Roboto Mono",monospace}
+.toast.ver{transform:translateX(-50%) translateY(0)}
+.toast.ruim{background:var(--vermelho);color:#fff}
+.toast.aviso{background:var(--amarelo);color:#000}
+@media (prefers-reduced-motion:reduce){.flash,.toast{transition:none}}
+
+iframe.oculto{position:absolute;width:0;height:0;border:0;visibility:hidden}
+
+@media (min-width:600px){ .corredores{grid-template-columns:1fr 1fr 1fr} }
+</style>
 </head>
 <body>
 
-    <aside>
-        <h2>⚡ WT T1</h2>
-        <a href="#" class="menu-link active">📦 Registrar Perdas</a>
-    </aside>
+<div class="tela">
+  <header class="topo">
+    <span class="marca">📦</span>
+    <div>
+      <h1>Produtos Perdidos</h1>
+      <div class="sub">PACKING T1</div>
+    </div>
+    <button class="sino" id="btnSom" aria-pressed="true" aria-label="Som e vibração">🔊</button>
+    <span class="wt">WT</span>
+  </header>
 
-    <main>
-        <header>Painel de Operações - Perdas Packing T1</header>
-        <div class="content">
-            
-            <div class="panel-card">
-                <form id="form-perdas" onsubmit="enviarDados(event)">
-                    
-                    <div class="form-group">
-                        <label>🔴 Digite ou Bipe a MELI ou EAN:</label>
-                        <textarea id="campo-bip" placeholder="Bipe os códigos aqui. Serão separados automaticamente..." required></textarea>
-                    </div>
+  <div class="barra-corredor" id="barra">
+    <span class="ponto"></span>
+    <span id="barraTexto">Escolha o corredor para liberar o bipe</span>
+    <span class="fila" id="fila"></span>
+  </div>
 
-                    <div class="form-group">
-                        <label>📍 QUAL CORREDOR:</label>
-                        <div class="corredores-grid">
-                            <label class="corredor-opcao"><input type="radio" name="corredor" value="CORREDOR 1 (MACHINE)" required> CORREDOR 1 (MACHINE)</label>
-                            <label class="corredor-opcao"><input type="radio" name="corredor" value="CORREDOR 2"> CORREDOR 2</label>
-                            <label class="corredor-opcao"><input type="radio" name="corredor" value="CORREDOR 3"> CORREDOR 3</label>
-                            <label class="corredor-opcao"><input type="radio" name="corredor" value="CORREDOR 4"> CORREDOR 4</label>
-                            <label class="corredor-opcao"><input type="radio" name="corredor" value="CORREDOR 5 (ULTIMO)"> CORREDOR 5 (ULTIMO)</label>
-                            <label class="corredor-opcao"><input type="radio" name="corredor" value="REJEITO"> REJEITO</label>
-                        </div>
-                    </div>
+  <main>
+    <div class="rotulo">MELI OU EAN <i>*</i></div>
+    <div class="bipe" id="caixaBipe">
+      <input id="codigo" type="text" inputmode="text" autocomplete="off" autocorrect="off"
+             autocapitalize="characters" spellcheck="false" enterkeyhint="done"
+             placeholder="Aponte e bipe o código">
+      <span class="laser"></span>
+    </div>
+    
+    <!-- BOTÃO DE ENVIAR NA TELA -->
+    <button id="btnEnviar" class="btn-enviar-tela">ENVIAR CÓDIGO</button>
+    
+    <p class="msg" id="msg"></p>
+    <p class="dica">Envia sozinho ao bipar, apertar Enter ou clicar em Enviar.</p>
 
-                    <button type="submit" class="btn-enviar" id="btn-texto">Registrar Perdas</button>
-                    
-                    <div id="mensagem-sucesso">✅ Perdas registradas com sucesso!</div>
-                </form>
-            </div>
+    <div class="rotulo" style="margin-top:22px">QUAL CORREDOR <i>*</i></div>
+    <div class="corredores" id="corredores" role="group" aria-label="Corredor"></div>
 
-        </div>
-    </main>
+    <div class="placar">
+      <div><div class="v" id="pHoje">0</div><div class="l">HOJE</div></div>
+      <div><div class="v" id="pSessao">0</div><div class="l">SESSÃO</div></div>
+      <div><div class="v" id="pMin">0</div><div class="l">POR MINUTO</div></div>
+    </div>
 
-    <script>
-        const textarea = document.getElementById('campo-bip');
+    <section class="hist">
+      <h2>Últimos bipes <button id="btnLimpaHist">limpar lista</button></h2>
+      <div id="lista"><p class="nada">Nenhum bipe ainda.</p></div>
+    </section>
+  </main>
+</div>
 
-        // Quebra automática universal para qualquer código colado ou rajada de bip
-        textarea.addEventListener('input', function() {
-            let texto = this.value;
-            
-            // Remove espaços extras indesejados e quebra qualquer bloco grudado de 9 a 14 caracteres (padrão MELI/EAN)
-            let textoFormatado = texto
-                .replace(/\s+/g, '\n') // Substitui espaços vazios por quebra de linha
-                .replace(/([A-Z0-9]{9,14})(?=[A-Z0-9])/g, '$1\n'); // Força quebra entre blocos colados de etiquetas
+<div class="flash" id="flash"></div>
+<div class="toast" id="toast"><span id="toastIcone">✓</span><span id="toastTexto"></span></div>
+<iframe name="envio" class="oculto" title="envio"></iframe>
 
-            if (texto !== textoFormatado) {
-                this.value = textoFormatado;
-            }
-        });
+<script>
+const $ = id => document.getElementById(id);
+const URL_ENVIO = `https://docs.google.com/forms/d/e/${CONFIG.FORM_ID}/formResponse`;
 
-        document.querySelectorAll('.corredor-opcao').forEach(label => {
-            label.addEventListener('click', function() {
-                document.querySelectorAll('.corredor-opcao').forEach(l => l.classList.remove('selected'));
-                this.classList.add('selected');
-                this.querySelector('input').checked = true;
-            });
-        });
+let ENTRY_COD = CONFIG.ENTRY_CODIGO;
+let ENTRY_COR = CONFIG.ENTRY_CORREDOR;
+let corredor = null, sessao = 0, historico = [], fila = [];
+let ultimoCodigo = "", ultimoMomento = 0, marcasTempo = [];
+let tempoTeclas = [], tDigitacao = null;
 
-        function enviarDados(event) {
-            event.preventDefault();
-            
-            let codigos = document.getElementById('campo-bip').value;
-            let corredorSelect = document.querySelector('input[name="corredor"]:checked');
-            
-            if (!corredorSelect) {
-                alert('Por favor, selecione um corredor.');
-                return;
-            }
+const guardar = (k,v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
+const ler = (k,p) => { try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : p; }catch(e){ return p; } };
+const hoje = () => new Date().toISOString().slice(0,10);
+const agora = () => Date.now();
 
-            let corredor = corredorSelect.value;
-            let btn = document.getElementById('btn-texto');
-            let sucessoBox = document.getElementById('mensagem-sucesso');
+function montarCorredores(){
+  $("corredores").innerHTML = CONFIG.CORREDORES.map((nome,i) => {
+    const rej = /rejeito/i.test(nome);
+    const n = rej ? "✕" : (nome.match(/\d+/) || [i+1])[0];
+    const extra = (nome.match(/\((.+)\)/) || [])[1] || "";
+    const curto = nome.replace(/\s*\(.+\)/,"");
+    return `<button class="corredor${rej ? " rej" : ""}" aria-pressed="false"
+        data-valor="${nome.replace(/"/g,'&quot;')}">
+        <span class="n">${n}</span>
+        <span class="t">${curto}${extra ? `<small>${extra}</small>` : ""}</span></button>`;
+  }).join("");
+}
 
-            btn.innerText = "Enviando...";
-            btn.disabled = true;
+function marcar(valor){
+  corredor = valor;
+  document.querySelectorAll(".corredor").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.valor === valor)));
+  const rej = valor && /rejeito/i.test(valor);
+  $("barra").classList.toggle("ativa", !!valor && !rej);
+  $("barra").classList.toggle("rejeito", !!rej);
+  $("barraTexto").innerHTML = valor
+    ? `Bipando em <b>${valor}</b>`
+    : "Escolha o corredor para liberar o bipe";
+  $("caixaBipe").classList.toggle("pronto", !!valor);
+  if (valor) guardar("wt_corredor", valor);
+}
 
-            let formUrl = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSdNOrORFRdaxFgruRX61VjgvxJo7WX9vmOBLQI_NsaERdH1Ww/viewform?embedded=true".replace('/viewform?embedded=true', '/formResponse');
-            
-            let formData = new FormData();
-            formData.append("entry.SEU_CAMPO_TEXTO", codigos); 
-            formData.append("entry.SEU_CAMPO_CORREDOR", corredor);
+let som = ler("wt_som", true);
+function pintarSom(){ $("btnSom").textContent = som ? "🔊" : "🔇"; $("btnSom").setAttribute("aria-pressed", String(som)); }
 
-            fetch(formUrl, {
-                method: "POST",
-                mode: "no-cors",
-                body: formData
-            }).then(() => {
-                sucessoBox.style.display = "block";
-                document.getElementById('form-perdas').reset();
-                document.querySelectorAll('.corredor-opcao').forEach(l => l.classList.remove('selected'));
-                btn.innerText = "Registrar Perdas";
-                btn.disabled = false;
+let ctxAudio = null;
+function bipe(tipo){
+  if (CONFIG.VIBRAR && navigator.vibrate)
+    navigator.vibrate(tipo === "ok" ? 45 : tipo === "aviso" ? [30,40,30] : [80,60,80]);
+  if (!som || !CONFIG.SOM) return;
+  try{
+    ctxAudio = ctxAudio || new (window.AudioContext || window.webkitAudioContext)();
+    if (ctxAudio.state === "suspended") ctxAudio.resume();
+    const o = ctxAudio.createOscillator(), g = ctxAudio.createGain();
+    o.connect(g); g.connect(ctxAudio.destination);
+    o.type = "square";
+    o.frequency.value = tipo === "ok" ? 1320 : tipo === "aviso" ? 760 : 300;
+    g.gain.setValueAtTime(.06, ctxAudio.currentTime);
+    g.gain.exponentialRampToValueAtTime(.0001, ctxAudio.currentTime + .12);
+    o.start(); o.stop(ctxAudio.currentTime + .13);
+  }catch(e){}
+}
 
-                setTimeout(() => { sucessoBox.style.display = "none"; }, 4000);
-            }).catch(() => {
-                sucessoBox.style.display = "block";
-                document.getElementById('form-perdas').reset();
-                btn.innerText = "Registrar Perdas";
-                btn.disabled = false;
-                setTimeout(() => { sucessoBox.style.display = "none"; }, 4000);
-            });
-        }
-    </script>
+let tFlash, tToast;
+function piscar(tipo){
+  const f = $("flash");
+  f.classList.toggle("ruim", tipo !== "ok");
+  f.classList.add("ver");
+  clearTimeout(tFlash);
+  tFlash = setTimeout(() => f.classList.remove("ver"), 110);
+}
+
+function toast(texto, tipo = "ok", codigo = ""){
+  $("toastIcone").textContent = tipo === "ok" ? "✓" : tipo === "aviso" ? "!" : "✕";
+  $("toastTexto").innerHTML = codigo ? `${texto} <span class="c">${codigo}</span>` : texto;
+  const t = $("toast");
+  t.classList.remove("ruim","aviso");
+  if (tipo !== "ok") t.classList.add(tipo === "aviso" ? "aviso" : "ruim");
+  t.classList.add("ver");
+  clearTimeout(tToast);
+  tToast = setTimeout(() => t.classList.remove("ver"), 1500);
+}
+
+function recusar(texto){
+  $("msg").textContent = texto; $("msg").className = "msg ver ruim";
+  $("caixaBipe").classList.add("erro");
+  setTimeout(() => $("caixaBipe").classList.remove("erro"), 300);
+  bipe("erro"); piscar("erro"); toast(texto, "erro");
+  focar();
+}
+
+function atualizarPlacar(){
+  const c = ler("wt_contador", {dia:hoje(), n:0});
+  if (c.dia !== hoje()){ c.dia = hoje(); c.n = 0; guardar("wt_contador", c); }
+  $("pHoje").textContent = c.n;
+  $("pSessao").textContent = sessao;
+  marcasTempo = marcasTempo.filter(t => agora() - t < 60000);
+  $("pMin").textContent = marcasTempo.length;
+  $("fila").textContent = fila.length ? `${fila.length} na fila` : "";
+}
+
+function desenharLista(){
+  if (!historico.length){ $("lista").innerHTML = `<p class="nada">Nenhum bipe ainda.</p>`; return; }
+  $("lista").innerHTML = historico.slice(0,15).map(h => `
+    <div class="item${h.espera ? " espera" : ""}">
+      <span class="st">${h.espera ? "⏳" : "✓"}</span>
+      <div><div class="cod">${h.codigo}</div><div class="cor">${h.corredor}</div></div>
+      <span class="hora">${h.hora}</span>
+    </div>`).join("");
+}
+
+function postar(codigo, corr){
+  const f = document.createElement("form");
+  f.action = URL_ENVIO; 
+  f.method = "POST"; 
+  f.target = "envio"; 
+  f.style.display = "none";
+  
+  [[ENTRY_COD, codigo], [ENTRY_COR, corr]].forEach(([n,v]) => {
+    const i = document.createElement("input");
+    i.type = "hidden"; i.name = n; i.value = v; f.appendChild(i);
+  });
+  
+  document.body.appendChild(f);
+  f.submit();
+  setTimeout(() => f.remove(), 800);
+}
+
+function escoarFila(){
+  if (!fila.length || !navigator.onLine) return;
+  const lote = [...fila]; fila = []; guardar("wt_fila", fila);
+  lote.forEach((it, i) => setTimeout(() => postar(it.codigo, it.corredor), i * 350));
+  historico.forEach(h => { if (h.espera) h.espera = false; });
+  guardar("wt_historico", historico);
+  desenharLista(); atualizarPlacar();
+  toast(`${lote.length} bipe(s) enviados`, "ok");
+}
+
+function registrar(codigo){
+  const offline = !navigator.onLine;
+
+  if (offline){
+    fila.push({codigo, corredor}); guardar("wt_fila", fila);
+  } else {
+    postar(codigo, corredor);
+  }
+
+  const c = ler("wt_contador", {dia:hoje(), n:0});
+  if (c.dia !== hoje()){ c.dia = hoje(); c.n = 0; }
+  c.n++; guardar("wt_contador", c);
+  sessao++; marcasTempo.push(agora());
+
+  historico.unshift({
+    codigo, corredor, espera: offline,
+    hora: new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"})
+  });
+  historico = historico.slice(0,40);
+  guardar("wt_historico", historico);
+
+  desenharLista(); atualizarPlacar();
+  bipe("ok"); piscar("ok");
+  toast(offline ? "Salvo, envia ao voltar a rede" : "Registrado", offline ? "aviso" : "ok", codigo);
+}
+
+function processar(){
+  clearTimeout(tDigitacao);
+  const textoBruto = $("codigo").value.trim().toUpperCase();
+  if (!textoBruto) return;
+
+  $("msg").classList.remove("ver");
+
+  if (!corredor){ $("codigo").value = ""; return recusar("Escolha o corredor antes de bipar."); }
+
+  // Separação automática inteligente para rajadas de bipes colados
+  let codigosFinais = [];
+  
+  textoBruto.split(/\s+/).forEach(pedaco => {
+    let blocos = pedaco.match(/([A-Z0-9]{9,14})(?=[A-Z0-9]|$)/g);
+    
+    if (blocos && blocos.length > 1) {
+      codigosFinais.push(...blocos);
+    } else {
+      if (pedaco.length >= CONFIG.MIN_CARACTERES) codigosFinais.push(pedaco);
+    }
+  });
+
+  if (codigosFinais.length === 0) return recusar("Código muito curto.");
+
+  if (codigosFinais.length === 1 && codigosFinais[0] === ultimoCodigo && agora() - ultimoMomento < CONFIG.ANTI_DUPLICADO){
+    $("codigo").value = "";
+    bipe("aviso"); toast("Bipe repetido, ignorado", "aviso", codigosFinais[0]);
+    return focar();
+  }
+  
+  codigosFinais.forEach((cod, index) => {
+      setTimeout(() => registrar(cod), index * 200);
+  });
+  
+  ultimoCodigo = codigosFinais[codigosFinais.length - 1];
+  ultimoMomento = agora();
+  
+  $("codigo").value = "";
+  tempoTeclas = [];
+  focar();
+}
+
+function focar(){
+  const i = $("codigo");
+  if (document.activeElement !== i) i.focus({preventScroll:true});
+}
+
+// Ações do Botão Enviar e do Enter do leitor a laser
+$("btnEnviar").addEventListener("click", () => {
+  processar();
+});
+
+$("codigo").addEventListener("keydown", e => {
+  if (e.key === "Enter" || e.key === "Tab"){ e.preventDefault(); processar(); return; }
+  tempoTeclas.push(agora());
+  if (tempoTeclas.length > 8) tempoTeclas.shift();
+});
+
+$("codigo").addEventListener("input", () => {
+  $("msg").classList.remove("ver");
+  clearTimeout(tDigitacao);
+  const v = $("codigo").value.trim();
+  if (v.length < CONFIG.MIN_CARACTERES) return;
+
+  const rapido = tempoTeclas.length >= 4 &&
+    (tempoTeclas[tempoTeclas.length-1] - tempoTeclas[0]) / (tempoTeclas.length-1) < 45;
+  if (rapido) tDigitacao = setTimeout(processar, CONFIG.PAUSA_COLETOR);
+});
+
+$("corredores").addEventListener("click", e => {
+  const b = e.target.closest(".corredor");
+  if (b){ marcar(b.dataset.valor); bipe("aviso"); focar(); }
+});
+
+$("btnSom").addEventListener("click", () => { som = !som; guardar("wt_som", som); pintarSom(); focar(); });
+$("btnLimpaHist").addEventListener("click", () => {
+  historico = historico.filter(h => h.espera); guardar("wt_historico", historico); desenharLista();
+});
+
+document.addEventListener("click", e => {
+  if (!e.target.closest("button") && !e.target.closest("input")) focar();
+});
+$("codigo").addEventListener("blur", () => setTimeout(focar, 60));
+document.addEventListener("keydown", e => {
+  if (e.key.length === 1 && document.activeElement !== $("codigo")
+      && !["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) focar();
+});
+
+window.addEventListener("online", escoarFila);
+window.addEventListener("offline", () => toast("Sem rede — bipes ficam na fila", "aviso"));
+
+/* ---------- INICIALIZAÇÃO ---------- */
+montarCorredores();
+pintarSom();
+historico = ler("wt_historico", []);
+fila = ler("wt_fila", []);
+desenharLista();
+atualizarPlacar();
+setInterval(atualizarPlacar, 5000);
+const ultimoCor = ler("wt_corredor", null);
+if (ultimoCor && CONFIG.CORREDORES.includes(ultimoCor)) marcar(ultimoCor); else marcar(null);
+escoarFila();
+setTimeout(focar, 300);
+</script>
 </body>
 </html>
