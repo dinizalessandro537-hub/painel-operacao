@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Portal Interno - Operação</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        aside {
+            width: 260px;
+            background-color: #1e1e1e;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        aside h2 {
+            font-size: 18px;
+            color: #ffcc00;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .menu-link {
+            display: block;
+            color: #bbb;
+            text-decoration: none;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+        .menu-link:hover, .menu-link.active {
+            background-color: #ffcc00;
+            color: #121212;
+        }
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #181818;
+        }
+        header {
+            background-color: #1e1e1e;
+            padding: 20px 30px;
+            border-bottom: 1px solid #333;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .iframe-container {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <h2>⚡ Meu Portal</h2>
+        <a href="#" class="menu-link active" onclick="trocarConteudo('forms', this)">📦 Registrar Perdas (Forms)</a>
+        <a href="#" class="menu-link" onclick="trocarConteudo('planilha', this)">📊 Planilha de Controle</a>
+        <a href="#" class="menu-link" onclick="trocarConteudo('anotacoes', this)">📝 Bloco de Notas / Links</a>
+    </aside>
+
+    <main>
+        <header id="titulo-pagina">Painel de Operações - Packing T1</header>
+        <div class="content">
+            <div class="iframe-container" id="painel-central">
+                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdNOrORFRdaxFgruRX61VjgvxJo7WX9vmOBLQI_NsaERdH1Ww/viewform?embedded=true"></iframe>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function trocarConteudo(tipo, elemento) {
+            document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
+            elemento.classList.add('active');
+
+            let container = document.getElementById('painel-central');
+            let titulo = document.getElementById('titulo-pagina');
+
+            if (tipo === 'forms') {
+                titulo.innerText = "Painel de Operações - Packing T1";
+                container.innerHTML = '<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdNOrORFRdaxFgruRX61VjgvxJo7WX9vmOBLQI_NsaERdH1Ww/viewform?embedded=true"></iframe>';
+            } else if (tipo === 'planilha') {
+                titulo.innerText = "Planilha de Resultados e Dashboard";
+                container.innerHTML = '<div style="padding: 40px; text-align: center; color: #333;"><h2>Planilha de Controle</h2><p>Acesse os dados da operação por aqui.</p></div>';
+            } else if (tipo === 'anotacoes') {
+                titulo.innerText = "Anotações e Links Úteis";
+                container.innerHTML = '<div style="padding: 40px; text-align: left; color: #333;"><h2>Central de Avisos</h2><p>- Conferir códigos antes do envio.</p></div>';
+            }
+        }
+    </script>
+</body>
+</html>
