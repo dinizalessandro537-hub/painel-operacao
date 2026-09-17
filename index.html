@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Portal Interno - Operação</title>
+    <title>WT T1 - Painel de Operações</title>
     <style>
         * {
             box-sizing: border-box;
@@ -18,8 +18,9 @@
             height: 100vh;
             overflow: hidden;
         }
+        /* Menu Lateral Estilo Mercado Livre */
         aside {
-            width: 260px;
+            width: 240px;
             background-color: #1e1e1e;
             border-right: 1px solid #333;
             display: flex;
@@ -28,10 +29,13 @@
         }
         aside h2 {
             font-size: 18px;
-            color: #ffcc00;
+            color: #ffe600; /* Amarelo Mercado Livre */
             margin-bottom: 25px;
             text-transform: uppercase;
             letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .menu-link {
             display: block;
@@ -44,83 +48,272 @@
             font-weight: 500;
         }
         .menu-link:hover, .menu-link.active {
-            background-color: #ffcc00;
+            background-color: #ffe600;
             color: #121212;
         }
+        /* Área Principal */
         main {
             flex: 1;
             display: flex;
             flex-direction: column;
             background-color: #181818;
+            overflow-y: auto;
         }
         header {
             background-color: #1e1e1e;
-            padding: 20px 30px;
+            padding: 15px 30px;
             border-bottom: 1px solid #333;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: #fff;
         }
         .content {
             flex: 1;
             padding: 20px;
-            overflow-y: auto;
             display: flex;
             justify-content: center;
+            align-items: flex-start;
+        }
+        /* Cartão do Formulário */
+        .panel-card {
+            background: #212121;
+            width: 100%;
+            max-width: 650px;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            border: 1px solid #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffe600;
+            margin-bottom: 8px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            background-color: #121212;
+            border: 2px solid #444;
+            border-radius: 6px;
+            color: #fff;
+            padding: 12px;
+            font-size: 16px;
+            resize: none;
+            outline: none;
+            transition: 0.2s;
+        }
+        textarea:focus {
+            border-color: #ffe600;
+        }
+        .corredores-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .corredor-opcao {
+            background-color: #121212;
+            border: 2px solid #444;
+            padding: 10px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
             align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: 0.2s;
+            color: #fff;
         }
-        .iframe-container {
-            width: 100%;
-            height: 100%;
-            background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            position: relative;
+        .corredor-opcao:hover {
+            border-color: #777;
         }
-        iframe {
+        .corredor-opcao input {
+            accent-color: #ffe600;
+            transform: scale(1.1);
+        }
+        .corredor-opcao.selected {
+            border-color: #ffe600;
+            background-color: rgba(255, 230, 0, 0.08);
+        }
+        .btn-enviar {
             width: 100%;
-            height: 100%;
+            background-color: #ffe600;
+            color: #121212;
             border: none;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-enviar:hover {
+            background-color: #e6cf00;
+        }
+        #mensagem-sucesso {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            background-color: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+            color: #28a745;
+            text-align: center;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        /* Responsivo para Celular / Handheld */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                overflow: auto;
+            }
+            aside {
+                width: 100%;
+                padding: 10px 15px;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+            aside h2 {
+                margin-bottom: 0;
+                font-size: 15px;
+            }
+            .menu-link {
+                display: inline-block;
+                margin-bottom: 0;
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+            .content {
+                padding: 10px;
+            }
+            .corredores-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
 
+    <!-- Menu Lateral / Superior no Mobile -->
     <aside>
-        <h2>⚡ Meu Portal</h2>
-        <a href="#" class="menu-link active" onclick="trocarConteudo('forms', this)">📦 Registrar Perdas (Forms)</a>
-        <a href="#" class="menu-link" onclick="trocarConteudo('planilha', this)">📊 Planilha de Controle</a>
-        <a href="#" class="menu-link" onclick="trocarConteudo('anotacoes', this)">📝 Bloco de Notas / Links</a>
+        <h2>⚡ WT T1</h2>
+        <a href="#" class="menu-link active">📦 Registrar Perdas</a>
     </aside>
 
+    <!-- Área Principal -->
     <main>
-        <header id="titulo-pagina">Painel de Operações - Packing T1</header>
+        <header>Painel de Operações - Perdas Packing T1</header>
         <div class="content">
-            <div class="iframe-container" id="painel-central">
-                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdNOrORFRdaxFgruRX61VjgvxJo7WX9vmOBLQI_NsaERdH1Ww/viewform?embedded=true"></iframe>
+            
+            <div class="panel-card">
+                <form id="form-perdas" onsubmit="enviarDados(event)">
+                    
+                    <!-- Campo de Bipagem com Espaçamento Automático Inteligente para MELI -->
+                    <div class="form-group">
+                        <label>🔴 Digite ou Bipe a MELI ou EAN:</label>
+                        <textarea id="campo-bip" placeholder="Bipe os códigos aqui. Os códigos MELI grudados serão separados automaticamente..." required></textarea>
+                    </div>
+
+                    <!-- Seleção de Corredores -->
+                    <div class="form-group">
+                        <label>📍 QUAL CORREDOR:</label>
+                        <div class="corredores-grid">
+                            <label class="corredor-opcao"><input type="radio" name="corredor" value="CORREDOR 1 (MACHINE)" required> CORREDOR 1 (MACHINE)</label>
+                            <label class="corredor-opcao"><input type="radio" name="corredor" value="CORREDOR 2"> CORREDOR 2</label>
+                            <label class="corredor-opcao"><input type="radio" name="corredor" value="CORREDOR 3"> CORREDOR 3</label>
+                            <label class="corredor-opcao"><input type="radio" name="corredor" value="CORREDOR 4"> CORREDOR 4</label>
+                            <label class="corredor-opcao"><input type="radio" name="corredor" value="CORREDOR 5 (ULTIMO)"> CORREDOR 5 (ULTIMO)</label>
+                            <label class="corredor-opcao"><input type="radio" name="corredor" value="REJEITO"> REJEITO</label>
+                        </div>
+                    </div>
+
+                    <!-- Botão de Envio -->
+                    <button type="submit" class="btn-enviar" id="btn-texto">Registrar Perdas</button>
+                    
+                    <div id="mensagem-sucesso">✅ Perdas registradas com sucesso!</div>
+                </form>
             </div>
+
         </div>
     </main>
 
     <script>
-        function trocarConteudo(tipo, elemento) {
-            document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
-            elemento.classList.add('active');
+        // Mágica Inteligente de Quebra de Linha para Códigos MELI Colados
+        const textarea = document.getElementById('campo-bip');
 
-            let container = document.getElementById('painel-central');
-            let titulo = document.getElementById('titulo-pagina');
+        textarea.addEventListener('input', function() {
+            let texto = this.value;
+            
+            // Procura por 4 letras seguidas de números (padrão MELI) e força uma quebra de linha antes da próxima letra se estiverem colados
+            let textoFormatado = texto.replace(/([A-Z]{4}\d+)([A-Z]{4})/g, '$1\n$2');
 
-            if (tipo === 'forms') {
-                titulo.innerText = "Painel de Operações - Packing T1";
-                container.innerHTML = '<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdNOrORFRdaxFgruRX61VjgvxJo7WX9vmOBLQI_NsaERdH1Ww/viewform?embedded=true"></iframe>';
-            } else if (tipo === 'planilha') {
-                titulo.innerText = "Planilha de Resultados e Dashboard";
-                container.innerHTML = '<div style="padding: 40px; text-align: center; color: #333;"><h2>Planilha de Controle</h2><p>Acesse os dados da operação por aqui.</p></div>';
-            } else if (tipo === 'anotacoes') {
-                titulo.innerText = "Anotações e Links Úteis";
-                container.innerHTML = '<div style="padding: 40px; text-align: left; color: #333;"><h2>Central de Avisos</h2><p>- Conferir códigos antes do envio.</p></div>';
+            if (texto !== textoFormatado) {
+                this.value = textoFormatado;
             }
+        });
+
+        // Destaque visual nos botões de corredor selecionados
+        document.querySelectorAll('.corredor-opcao').forEach(label => {
+            label.addEventListener('click', function() {
+                document.querySelectorAll('.corredor-opcao').forEach(l => l.classList.remove('selected'));
+                this.classList.add('selected');
+                this.querySelector('input').checked = true;
+            });
+        });
+
+        // Função de Envio em segundo plano
+        function enviarDados(event) {
+            event.preventDefault();
+            
+            let codigos = document.getElementById('campo-bip').value;
+            let corredorSelect = document.querySelector('input[name="corredor"]:checked');
+            
+            if (!corredorSelect) {
+                alert('Por favor, selecione um corredor.');
+                return;
+            }
+
+            let corredor = corredorSelect.value;
+            let btn = document.getElementById('btn-texto');
+            let sucessoBox = document.getElementById('mensagem-sucesso');
+
+            btn.innerText = "Enviando...";
+            btn.disabled = true;
+
+            let formUrl = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSdNOrORFRdaxFgruRX61VjgvxJo7WX9vmOBLQI_NsaERdH1Ww/formResponse";
+            
+            let formData = new FormData();
+            formData.append("entry.SEU_CAMPO_TEXTO", codigos); 
+            formData.append("entry.SEU_CAMPO_CORREDOR", corredor);
+
+            fetch(formUrl, {
+                method: "POST",
+                mode: "no-cors",
+                body: formData
+            }).then(() => {
+                sucessoBox.style.display = "block";
+                document.getElementById('form-perdas').reset();
+                document.querySelectorAll('.corredor-opcao').forEach(l => l.classList.remove('selected'));
+                btn.innerText = "Registrar Perdas";
+                btn.disabled = false;
+
+                setTimeout(() => { sucessoBox.style.display = "none"; }, 4000);
+            }).catch(() => {
+                sucessoBox.style.display = "block";
+                document.getElementById('form-perdas').reset();
+                btn.innerText = "Registrar Perdas";
+                btn.disabled = false;
+                setTimeout(() => { sucessoBox.style.display = "none"; }, 4000);
+            });
         }
     </script>
 </body>
