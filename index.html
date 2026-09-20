@@ -1,295 +1,73 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<title>Dashboard WT · Packing T1</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+// ==========================================
+// API DE CONEXÃO COM O GITHUB PAGES
+// ==========================================
 
-<style>
-:root {
-  --amarelo: #FFE600;
-  --preto: #0E0E0E;
-  --preto-2: #1A1A1A;
-  --preto-3: #242424;
-  --borda: #343434;
-  --texto: #F5F5F5;
-  --fraco: #8E8E8E;
-  --verde: #00C853;
-  --vermelho: #FF4444;
-}
+// 1. LER DADOS (Manda os dados da planilha para a tela do GitHub)
+function doGet(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // Agora sim, buscando pelo nome EXATO da aba que está na sua foto!
+  var abaDados = ss.getSheetByName("Respostas ao formulário 1") || ss.getSheets()[0];
+  
+  if (!abaDados) {
+    return ContentService.createTextOutput(JSON.stringify({erro: "Aba não encontrada"}))
+                         .setMimeType(ContentService.MimeType.JSON);
+  }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: Roboto, sans-serif;
-  background: var(--preto); color: var(--texto);
-  font-size: 14px; padding: 20px;
-}
-
-header {
-  display: flex; justify-content: space-between; align-items: center;
-  background: var(--amarelo); color: #000;
-  padding: 15px 20px; border-radius: 12px; margin-bottom: 20px;
-}
-.logo-area { display: flex; align-items: center; gap: 15px; }
-.logo-area img { height: 35px; }
-.titulo h1 { font-size: 18px; font-weight: 900; line-height: 1.1; }
-.titulo span { font-size: 12px; font-weight: 500; opacity: 0.8; }
-.btn-melhoria {
-  background: #000; color: var(--amarelo);
-  border: none; padding: 10px 15px; border-radius: 8px;
-  font-weight: 700; cursor: pointer; transition: 0.2s;
-}
-.btn-melhoria:hover { transform: scale(1.05); }
-
-.cards {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;
-}
-.card {
-  background: var(--preto-2); border: 1px solid var(--borda);
-  border-radius: 12px; padding: 20px; text-align: center;
-}
-.card h2 { font-size: 12px; color: var(--fraco); text-transform: uppercase; margin-bottom: 5px;}
-.card .valor { font-size: 32px; font-weight: 900; font-family: "Roboto Mono", monospace; color: var(--amarelo); }
-.card.erro .valor { color: var(--vermelho); }
-.card.ok .valor { color: var(--verde); }
-
-.pesquisa-container {
-  margin-bottom: 20px; display: flex; gap: 10px;
-}
-.pesquisa-container input {
-  flex: 1; background: var(--preto-2); color: #fff;
-  border: 1px solid var(--borda); border-radius: 12px;
-  padding: 15px 20px; font-size: 16px; font-family: inherit;
-  transition: 0.2s;
-}
-.pesquisa-container input:focus {
-  outline: none; border-color: var(--amarelo); background: #1F1F1F;
-}
-
-.tabela-container {
-  background: var(--preto-2); border: 1px solid var(--borda);
-  border-radius: 12px; overflow-x: auto;
-}
-table { width: 100%; border-collapse: collapse; text-align: left; }
-th {
-  background: var(--preto-3); color: var(--fraco);
-  padding: 15px; font-size: 12px; text-transform: uppercase;
-}
-td { padding: 15px; border-bottom: 1px solid var(--borda); font-family: "Roboto Mono", monospace; }
-tr:last-child td { border-bottom: none; }
-
-.status-erro { color: var(--vermelho); font-weight: 700; }
-.status-aguardando { color: var(--amarelo); font-weight: 500; }
-
-.modal-overlay {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.8); display: none; place-items: center; z-index: 100;
-}
-.modal {
-  background: var(--preto-2); padding: 25px; border-radius: 12px;
-  width: 90%; max-width: 400px; border: 1px solid var(--borda);
-}
-.modal h2 { margin-bottom: 15px; font-size: 18px; color: var(--amarelo); }
-.modal textarea {
-  width: 100%; height: 100px; background: var(--preto-3);
-  border: 1px solid var(--borda); color: #fff; padding: 10px;
-  border-radius: 8px; margin-bottom: 15px; font-family: inherit; resize: none;
-}
-.modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
-.modal-btns button {
-  padding: 10px 15px; border: none; border-radius: 8px;
-  font-weight: 700; cursor: pointer;
-}
-.btn-cancelar { background: var(--preto-3); color: #fff; }
-.btn-enviar { background: var(--amarelo); color: #000; }
-.carregando { text-align: center; padding: 40px; color: var(--fraco); font-style: italic; }
-</style>
-</head>
-<body>
-
-  <header>
-    <div class="logo-area">
-      <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.19.1/mercadolibre/logo__small@2x.png" alt="Logo">
-      <div class="titulo">
-        <h1>Painel de Monitoramento WT</h1>
-        <span>PACKING T1 - Atualização ao vivo 🟢</span>
-      </div>
-    </div>
-    <button class="btn-melhoria" onclick="abrirModal()">💡 Anotar Melhoria</button>
-  </header>
-
-  <div class="cards">
-    <div class="card"><h2>Registros Listados</h2><div class="valor" id="countTotal">-</div></div>
-    <div class="card erro"><h2>Erros / Inválidos</h2><div class="valor" id="countErro">-</div></div>
-    <div class="card ok"><h2>Aguardando Tratativa</h2><div class="valor" id="countAguarda">-</div></div>
-  </div>
-
-  <div class="pesquisa-container">
-    <input type="text" id="campoPesquisa" placeholder="Ex: HOJE 2:39PM, MELI, CORREDOR 3..." oninput="filtrarPesquisa()">
-  </div>
-
-  <div class="tabela-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Data e Hora</th>
-          <th>MELI / EAN</th>
-          <th>Corredor</th>
-          <th>Alerta / Status</th>
-          <th>Dia</th>
-        </tr>
-      </thead>
-      <tbody id="corpoTabela">
-        <tr><td colspan="5" class="carregando">Sincronizando com a planilha...</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <h2>Sugerir Melhoria</h2>
-      <p style="font-size: 12px; color: var(--fraco); margin-bottom: 10px;">Descreva o que precisa ser ajustado ou criado no painel.</p>
-      <textarea id="textoMelhoria" placeholder="Ex: Adicionar filtro por horários..."></textarea>
-      <div class="modal-btns">
-        <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
-        <button class="btn-enviar" onclick="enviarMelhoria()" id="btnEnviar">Enviar Ideia</button>
-      </div>
-    </div>
-  </div>
-
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyclDr0_4nQ_sx17df4YS7rXqDn_SwgqQyB9FaiJx16LqdKSaHEzODz-J-abwwHjjxy/exec";
-let dadosGlobais = []; 
-let isFetching = false;
-
-async function atualizarDashboard() {
-  if (isFetching) return;
-  isFetching = true;
-
-  try {
-    const resposta = await fetch(API_URL);
-    const dados = await resposta.json();
+  var ultimaLinha = abaDados.getLastRow();
+  var dados = [];
+  
+  // Pega os dados da linha 2 até a última
+  if (ultimaLinha > 1) {
+    var valores = abaDados.getRange(2, 1, ultimaLinha - 1, 5).getDisplayValues(); 
     
-    if (dados.erro) {
-      document.getElementById("corpoTabela").innerHTML = `<tr><td colspan="5" class="status-erro" style="text-align:center; padding: 30px;">ERRO DE CONEXÃO: ${dados.erro}. Verifique o nome da aba.</td></tr>`;
-      isFetching = false;
-      return;
+    for (var i = 0; i < valores.length; i++) {
+      dados.push({
+        data: valores[i][0],
+        codigo: valores[i][1],
+        corredor: valores[i][2],
+        alerta: valores[i][3],
+        dia: valores[i][4]
+      });
     }
+  }
 
-    if (dados.registros) {
-      dadosGlobais = dados.registros;
-      filtrarPesquisa(); 
+  var resposta = {
+    total: dados.length,
+    registros: dados
+  };
+
+  // Libera o acesso para o GitHub ler sem bloqueio
+  return ContentService.createTextOutput(JSON.stringify(resposta))
+                       .setMimeType(ContentService.MimeType.JSON);
+}
+
+// 2. RECEBER DADOS (Pega a melhoria escrita no GitHub e salva na aba MELHORIAS)
+function doPost(e) {
+  try {
+    var dadosRecebidos = JSON.parse(e.postData.contents);
+    
+    if (dadosRecebidos.tipo === "melhoria") {
+      var ss = SpreadsheetApp.getActiveSpreadsheet();
+      var abaMelhorias = ss.getSheetByName("MELHORIAS");
+      
+      if (!abaMelhorias) {
+        abaMelhorias = ss.insertSheet("MELHORIAS");
+      }
+      
+      if (abaMelhorias.getLastRow() === 0) {
+        abaMelhorias.appendRow(["DATA E HORA", "SUGESTÃO", "STATUS"]);
+        abaMelhorias.getRange("A1:C1").setBackground("#FFE600").setFontWeight("bold");
+      }
+      
+      var dataAtual = new Date().toLocaleString("pt-BR");
+      abaMelhorias.appendRow([dataAtual, dadosRecebidos.texto, "PENDENTE"]);
+      
+      return ContentService.createTextOutput(JSON.stringify({sucesso: true}))
+                           .setMimeType(ContentService.MimeType.JSON);
     }
   } catch (erro) {
-    console.error("Erro de conexão:", erro);
-  }
-  isFetching = false;
-}
-
-function filtrarPesquisa() {
-  const termo = document.getElementById("campoPesquisa").value.toLowerCase().trim();
-  let dadosFiltrados = dadosGlobais;
-
-  if (termo !== "") {
-    const termosArray = termo.split(/\s+/);
-    
-    dadosFiltrados = dadosGlobais.filter(reg => {
-      const textoLinha = `${reg.data} ${reg.codigo} ${reg.corredor} ${reg.alerta} ${reg.dia}`.toLowerCase();
-      return termosArray.every(palavra => textoLinha.includes(palavra));
-    });
-  }
-
-  renderizarTabela(dadosFiltrados.slice(0, 150));
-  calcularEstatisticas(dadosFiltrados);
-}
-
-function calcularEstatisticas(registros) {
-  let erros = 0;
-  let aguardando = 0;
-
-  registros.forEach(reg => {
-    let alerta = (reg.alerta || "").toString().toUpperCase();
-    if (alerta.includes("INVÁLIDA") || alerta.includes("INCOMPLETO") || alerta.includes("INCOMPLETA")) {
-      erros++;
-    } else if (alerta.includes("AGUARDANDO")) {
-      aguardando++;
-    }
-  });
-
-  document.getElementById("countTotal").textContent = registros.length;
-  document.getElementById("countErro").textContent = erros;
-  document.getElementById("countAguarda").textContent = aguardando;
-}
-
-function renderizarTabela(registros) {
-  const tbody = document.getElementById("corpoTabela");
-  tbody.innerHTML = ""; 
-
-  if (registros.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="carregando">Nenhum registro encontrado para essa pesquisa.</td></tr>`;
-    return;
-  }
-
-  registros.forEach(reg => {
-    let tr = document.createElement("tr");
-    
-    let classeAlerta = "";
-    let alerta = (reg.alerta || "").toString().toUpperCase();
-    if (alerta.includes("INVÁLIDA") || alerta.includes("INCOMPLETO") || alerta.includes("INCOMPLETA")) {
-      classeAlerta = "status-erro";
-    } else if (alerta.includes("AGUARDANDO")) {
-      classeAlerta = "status-aguardando";
-    }
-
-    tr.innerHTML = `
-      <td style="color: var(--fraco);">${reg.data}</td>
-      <td style="font-weight: 700;">${reg.codigo}</td>
-      <td>${reg.corredor}</td>
-      <td class="${classeAlerta}">${reg.alerta}</td>
-      <td style="color: var(--verde); font-weight: bold;">${reg.dia}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function abrirModal() {
-  document.getElementById("modalOverlay").style.display = "grid";
-  document.getElementById("textoMelhoria").focus();
-}
-
-function fecharModal() {
-  document.getElementById("modalOverlay").style.display = "none";
-  document.getElementById("textoMelhoria").value = "";
-}
-
-async function enviarMelhoria() {
-  const texto = document.getElementById("textoMelhoria").value.trim();
-  if (!texto) return alert("Digite algo antes de enviar!");
-
-  const btn = document.getElementById("btnEnviar");
-  btn.textContent = "Enviando...";
-  btn.disabled = true;
-
-  try {
-    await fetch(API_URL, {
-      method: "POST",
-      body: JSON.stringify({ tipo: "melhoria", texto: texto })
-    });
-    alert("Melhoria enviada para a aba MELHORIAS com sucesso!");
-    fecharModal();
-  } catch (erro) {
-    alert("Erro ao enviar. Tente novamente.");
-  } finally {
-    btn.textContent = "Enviar Ideia";
-    btn.disabled = false;
+    return ContentService.createTextOutput(JSON.stringify({sucesso: false, erro: erro.toString()}))
+                         .setMimeType(ContentService.MimeType.JSON);
   }
 }
-
-atualizarDashboard();
-setInterval(atualizarDashboard, 10000);
-</script>
-</body>
-</html>
