@@ -3,519 +3,259 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#111111">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<title>Perdas WT · Packing T1</title>
+<title>Dashboard WT · Packing T1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
 
-<script>
-/* =========================================================
-   CONFIGURAÇÃO DA OPERAÇÃO - WT PACKING T1
-   ========================================================= */
-const CONFIG = {
-  FORM_ID: "1FAIpQLSdNOrORFRdaxFgruRX61VjgvxJo7WX9vmOBLQI_NsaERdH1Ww",
-
-  ENTRY_CODIGO:   "entry.1717891624",   
-  ENTRY_CORREDOR: "entry.526746113",   
-
-  CORREDORES: [
-    "CORREDOR 1 (MACHINE)",
-    "CORREDOR 2",
-    "CORREDOR 3",
-    "CORREDOR 4",
-    "CORREDOR 5 (ULTIMO)",
-    "REJEITO"
-  ],
-
-  MIN_CARACTERES: 4,    
-  PAUSA_COLETOR: 90,    
-  ANTI_DUPLICADO: 1500, 
-  SOM: true,
-  VIBRAR: true
-};
-</script>
-
 <style>
-:root{
-  --amarelo:#FFE600; --amarelo-2:#E6CF00;
-  --preto:#0E0E0E; --preto-2:#1A1A1A; --preto-3:#242424;
-  --borda:#343434; --texto:#F5F5F5; --fraco:#8E8E8E;
-  --verde:#00C853; --vermelho:#FF4444;
-}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{
-  font-family:Roboto,-apple-system,"Segoe UI",sans-serif;
-  background:var(--preto);color:var(--texto);font-size:16px;line-height:1.4;
-  overscroll-behavior:none;
-}
-button,input{font-family:inherit;font-size:inherit;color:inherit}
-button{border:none;background:none;cursor:pointer}
-:focus-visible{outline:3px solid var(--amarelo);outline-offset:2px}
-
-.tela{
-  max-width:600px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;
-  padding-bottom:env(safe-area-inset-bottom);
+:root {
+  --amarelo: #FFE600;
+  --preto: #0E0E0E;
+  --preto-2: #1A1A1A;
+  --preto-3: #242424;
+  --borda: #343434;
+  --texto: #F5F5F5;
+  --fraco: #8E8E8E;
+  --verde: #00C853;
+  --vermelho: #FF4444;
 }
 
-.topo{
-  background:var(--amarelo);color:#000;
-  padding:calc(10px + env(safe-area-inset-top)) 16px 10px;
-  display:flex;align-items:center;gap:10px;
-}
-.marca{
-  width:32px;height:32px;border-radius:8px;background:#000;
-  display:grid;place-items:center;flex:none;padding:4px;overflow:hidden;
-}
-.marca img{width:100%;height:100%;object-fit:contain;}
-.topo h1{font-size:14.5px;font-weight:900;letter-spacing:-.2px;line-height:1.15}
-.topo .sub{font-size:11px;font-weight:500;opacity:.6;letter-spacing:.4px}
-.wt{margin-left:auto;background:#000;color:var(--amarelo);font-size:11.5px;font-weight:900;
-    padding:5px 10px;border-radius:6px;letter-spacing:1.2px;flex:none}
-.sino{background:#000;color:var(--amarelo);width:32px;height:32px;border-radius:8px;
-      display:grid;place-items:center;font-size:14px;flex:none}
-.sino[aria-pressed="false"]{background:rgba(0,0,0,.18);color:rgba(0,0,0,.5)}
-
-.barra-corredor{
-  background:var(--preto-2);border-bottom:1px solid var(--borda);
-  padding:9px 16px;display:flex;align-items:center;gap:9px;font-size:12.5px;
-}
-.barra-corredor .ponto{width:9px;height:9px;border-radius:50%;background:#555;flex:none}
-.barra-corredor.ativa .ponto{background:var(--verde);box-shadow:0 0 8px var(--verde)}
-.barra-corredor.rejeito .ponto{background:var(--vermelho);box-shadow:0 0 8px var(--vermelho)}
-.barra-corredor b{font-weight:700;color:var(--amarelo)}
-.barra-corredor.rejeito b{color:var(--vermelho)}
-.barra-corredor .fila{margin-left:auto;color:var(--fraco);font-size:11.5px}
-
-main{flex:1;padding:16px 16px 6px}
-.rotulo{font-size:11.5px;font-weight:700;color:var(--fraco);letter-spacing:.7px;margin-bottom:8px}
-.rotulo i{color:var(--amarelo);font-style:normal}
-
-.bipe{position:relative}
-.bipe input{
-  width:100%;background:var(--preto-2);border:2px solid var(--borda);border-radius:14px;
-  padding:22px 56px 22px 18px;
-  font-family:"Roboto Mono",monospace;font-size:22px;font-weight:700;letter-spacing:1.5px;
-}
-.bipe input::placeholder{font-family:Roboto,sans-serif;font-size:15px;font-weight:400;letter-spacing:0;color:#5E5E5E}
-.bipe input:focus{border-color:var(--amarelo);background:#1F1F1F;outline:none}
-.bipe .laser{
-  position:absolute;right:16px;top:50%;transform:translateY(-50%);
-  width:22px;height:2px;background:var(--vermelho);border-radius:2px;
-  box-shadow:0 0 10px var(--vermelho);opacity:.75;
-}
-.bipe.pronto input{border-color:#4A4A4A}
-.bipe.erro input{border-color:var(--vermelho);animation:tremer .28s}
-@keyframes tremer{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-
-.btn-enviar-tela {
-  width: 100%;
-  background: var(--amarelo);
-  color: #000;
-  border-radius: 12px;
-  padding: 15px;
-  font-weight: 900;
-  font-size: 15px;
-  margin-top: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  box-shadow: 0 4px 10px rgba(255, 230, 0, 0.15);
-  transition: 0.1s;
-}
-.btn-enviar-tela:active {
-  background: var(--amarelo-2);
-  transform: scale(0.98);
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: Roboto, sans-serif;
+  background: var(--preto); color: var(--texto);
+  font-size: 14px; padding: 20px;
 }
 
-.dica{font-size:11.5px;color:#5E5E5E;margin-top:8px;text-align:center}
-.msg{font-size:13px;font-weight:500;margin-top:9px;display:none}
-.msg.ver{display:block}
-.msg.ruim{color:var(--vermelho)}
-
-.corredores{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:20px}
-.corredor{
-  background:var(--preto-2);border:2px solid var(--borda);border-radius:12px;
-  padding:14px 12px;display:flex;align-items:center;gap:10px;min-height:62px;text-align:left;
+header {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--amarelo); color: #000;
+  padding: 15px 20px; border-radius: 12px; margin-bottom: 20px;
 }
-.corredor .n{width:28px;height:28px;border-radius:8px;background:var(--preto-3);
-  display:grid;place-items:center;font-weight:900;font-size:14px;color:var(--fraco);flex:none}
-.corredor .t{font-size:13.5px;font-weight:500;line-height:1.2}
-.corredor .t small{display:block;font-size:10.5px;color:var(--fraco);font-weight:400;margin-top:2px}
-.corredor:active{background:var(--preto-3)}
-.corredor[aria-pressed="true"]{background:var(--amarelo);border-color:var(--amarelo);color:#000}
-.corredor[aria-pressed="true"] .n{background:#000;color:var(--amarelo)}
-.corredor[aria-pressed="true"] .t small{color:rgba(0,0,0,.6)}
-.corredor.rej[aria-pressed="true"]{background:var(--vermelho);border-color:var(--vermelho);color:#fff}
-.corredor.rej[aria-pressed="true"] .n{background:rgba(0,0,0,.3);color:#fff}
-.corredor.rej[aria-pressed="true"] .t small{color:rgba(255,255,255,.75)}
-
-.placar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:20px}
-.placar div{background:var(--preto-2);border:1px solid var(--borda);border-radius:11px;padding:12px 10px;text-align:center}
-.placar .v{font-size:23px;font-weight:900;font-family:"Roboto Mono",monospace;color:var(--amarelo);line-height:1}
-.placar .l{font-size:9.5px;color:var(--fraco);font-weight:700;letter-spacing:.5px;margin-top:5px}
-
-.hist{margin-top:20px}
-.hist h2{font-size:11.5px;font-weight:700;color:var(--fraco);letter-spacing:.7px;
-  margin-bottom:9px;display:flex;justify-content:space-between;align-items:center}
-.hist h2 button{font-size:11px;color:var(--fraco);font-weight:500;padding:4px}
-.item{display:flex;align-items:center;gap:11px;background:var(--preto-2);
-  border:1px solid var(--borda);border-radius:10px;padding:11px 13px;margin-bottom:6px}
-.item.espera{border-color:#6B5400;background:#231C00}
-.item .st{font-size:14px;flex:none}
-.item .cod{font-family:"Roboto Mono",monospace;font-weight:700;font-size:14px;letter-spacing:.5px}
-.item .cor{font-size:11px;color:var(--fraco);margin-top:2px}
-.item .hora{margin-left:auto;font-size:11px;color:var(--fraco);font-family:"Roboto Mono",monospace;flex:none}
-.nada{color:#4F4F4F;font-size:12.5px;text-align:center;padding:20px 0}
-
-.flash{
-  position:fixed;inset:0;z-index:70;pointer-events:none;opacity:0;
-  background:var(--verde);transition:opacity .09s ease-out;
+.logo-area { display: flex; align-items: center; gap: 15px; }
+.logo-area img { height: 35px; }
+.titulo h1 { font-size: 18px; font-weight: 900; line-height: 1.1; }
+.titulo span { font-size: 12px; font-weight: 500; opacity: 0.8; }
+.btn-melhoria {
+  background: #000; color: var(--amarelo);
+  border: none; padding: 10px 15px; border-radius: 8px;
+  font-weight: 700; cursor: pointer; transition: 0.2s;
 }
-.flash.ver{opacity:.32}
-.flash.ruim{background:var(--vermelho)}
-.toast{
-  position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));
-  transform:translateX(-50%) translateY(150%);
-  background:var(--verde);color:#042612;font-weight:900;font-size:14.5px;
-  padding:14px 22px;border-radius:12px;z-index:80;
-  box-shadow:0 10px 30px rgba(0,0,0,.6);transition:transform .18s cubic-bezier(.2,.9,.3,1.3);
-  display:flex;align-items:center;gap:8px;max-width:92vw;
+.btn-melhoria:hover { transform: scale(1.05); }
+
+.cards {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px;
 }
-.toast .c{font-family:"Roboto Mono",monospace}
-.toast.ver{transform:translateX(-50%) translateY(0)}
-.toast.ruim{background:var(--vermelho);color:#fff}
-.toast.aviso{background:var(--amarelo);color:#000}
-@media (prefers-reduced-motion:reduce){.flash,.toast{transition:none}}
+.card {
+  background: var(--preto-2); border: 1px solid var(--borda);
+  border-radius: 12px; padding: 20px; text-align: center;
+}
+.card h2 { font-size: 12px; color: var(--fraco); text-transform: uppercase; margin-bottom: 5px;}
+.card .valor { font-size: 32px; font-weight: 900; font-family: "Roboto Mono", monospace; color: var(--amarelo); }
+.card.erro .valor { color: var(--vermelho); }
+.card.ok .valor { color: var(--verde); }
 
-iframe.oculto{position:absolute;width:0;height:0;border:0;visibility:hidden}
+.tabela-container {
+  background: var(--preto-2); border: 1px solid var(--borda);
+  border-radius: 12px; overflow-x: auto;
+}
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th {
+  background: var(--preto-3); color: var(--fraco);
+  padding: 15px; font-size: 12px; text-transform: uppercase;
+}
+td { padding: 15px; border-bottom: 1px solid var(--borda); font-family: "Roboto Mono", monospace; }
+tr:last-child td { border-bottom: none; }
 
-@media (min-width:600px){ .corredores{grid-template-columns:1fr 1fr 1fr} }
+.status-erro { color: var(--vermelho); font-weight: 700; }
+.status-aguardando { color: var(--amarelo); font-weight: 500; }
+
+/* Modal Melhorias */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8); display: none; place-items: center; z-index: 100;
+}
+.modal {
+  background: var(--preto-2); padding: 25px; border-radius: 12px;
+  width: 90%; max-width: 400px; border: 1px solid var(--borda);
+}
+.modal h2 { margin-bottom: 15px; font-size: 18px; color: var(--amarelo); }
+.modal textarea {
+  width: 100%; height: 100px; background: var(--preto-3);
+  border: 1px solid var(--borda); color: #fff; padding: 10px;
+  border-radius: 8px; margin-bottom: 15px; font-family: inherit; resize: none;
+}
+.modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
+.modal-btns button {
+  padding: 10px 15px; border: none; border-radius: 8px;
+  font-weight: 700; cursor: pointer;
+}
+.btn-cancelar { background: var(--preto-3); color: #fff; }
+.btn-enviar { background: var(--amarelo); color: #000; }
+
+.carregando { text-align: center; padding: 40px; color: var(--fraco); font-style: italic; }
 </style>
 </head>
 <body>
 
-<div class="tela">
-  <header class="topo">
-    <span class="marca">
-      <!-- LINK DIRETO DA IMAGEM DO LOGO -->
-      <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.19.1/mercadolibre/logo__small@2x.png" alt="Logo Mercado Livre">
-    </span>
-    <div>
-      <h1>Produtos Perdidos</h1>
-      <div class="sub">PACKING T1</div>
+  <header>
+    <div class="logo-area">
+      <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.19.1/mercadolibre/logo__small@2x.png" alt="Logo">
+      <div class="titulo">
+        <h1>Painel de Monitoramento WT</h1>
+        <span>PACKING T1 - Atualização ao vivo 🟢</span>
+      </div>
     </div>
-    <button class="sino" id="btnSom" aria-pressed="true" aria-label="Som e vibração">🔊</button>
-    <span class="wt">WT</span>
+    <button class="btn-melhoria" onclick="abrirModal()">💡 Anotar Melhoria</button>
   </header>
 
-  <div class="barra-corredor" id="barra">
-    <span class="ponto"></span>
-    <span id="barraTexto">Escolha o corredor para liberar o bipe</span>
-    <span class="fila" id="fila"></span>
+  <div class="cards">
+    <div class="card"><h2>Total Registrado</h2><div class="valor" id="countTotal">-</div></div>
+    <div class="card erro"><h2>Erros / Inválidos</h2><div class="valor" id="countErro">-</div></div>
+    <div class="card ok"><h2>Aguardando Tratativa</h2><div class="valor" id="countAguarda">-</div></div>
   </div>
 
-  <main>
-    <div class="rotulo">MELI OU EAN <i>*</i></div>
-    <div class="bipe" id="caixaBipe">
-      <input id="codigo" type="text" inputmode="text" autocomplete="off" autocorrect="off"
-             autocapitalize="characters" spellcheck="false" enterkeyhint="done"
-             placeholder="Aponte e bipe o código">
-      <span class="laser"></span>
+  <div class="tabela-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Data e Hora</th>
+          <th>MELI / EAN</th>
+          <th>Corredor</th>
+          <th>Alerta / Status</th>
+          <th>Dia</th>
+        </tr>
+      </thead>
+      <tbody id="corpoTabela">
+        <tr><td colspan="5" class="carregando">Sincronizando com a planilha...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MODAL DE MELHORIAS -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h2>Sugerir Melhoria</h2>
+      <p style="font-size: 12px; color: var(--fraco); margin-bottom: 10px;">Descreva o que precisa ser ajustado ou criado no painel.</p>
+      <textarea id="textoMelhoria" placeholder="Ex: Adicionar um alerta sonoro quando bater 100 itens..."></textarea>
+      <div class="modal-btns">
+        <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+        <button class="btn-enviar" onclick="enviarMelhoria()" id="btnEnviar">Enviar Ideia</button>
+      </div>
     </div>
-    
-    <button id="btnEnviar" class="btn-enviar-tela">ENVIAR CÓDIGO</button>
-    
-    <p class="msg" id="msg"></p>
-    <p class="dica">Envia sozinho ao bipar, apertar Enter ou clicar em Enviar.</p>
-
-    <div class="rotulo" style="margin-top:22px">QUAL CORREDOR <i>*</i></div>
-    <div class="corredores" id="corredores" role="group" aria-label="Corredor"></div>
-
-    <div class="placar">
-      <div><div class="v" id="pHoje">0</div><div class="l">HOJE</div></div>
-      <div><div class="v" id="pSessao">0</div><div class="l">SESSÃO</div></div>
-      <div><div class="v" id="pMin">0</div><div class="l">POR MINUTO</div></div>
-    </div>
-
-    <section class="hist">
-      <h2>Últimos bipes <button id="btnLimpaHist">limpar lista</button></h2>
-      <div id="lista"><p class="nada">Nenhum bipe ainda.</p></div>
-    </section>
-  </main>
-</div>
-
-<div class="flash" id="flash"></div>
-<div class="toast" id="toast"><span id="toastIcone">✓</span><span id="toastTexto"></span></div>
-<iframe name="envio" class="oculto" title="envio"></iframe>
+  </div>
 
 <script>
-const $ = id => document.getElementById(id);
-const URL_ENVIO = `https://docs.google.com/forms/d/e/${CONFIG.FORM_ID}/formResponse`;
+// O SEU LINK DA API GERADO NO APPS SCRIPT
+const API_URL = "https://script.google.com/macros/s/AKfycbyclDr0_4nQ_sx17df4YS7rXqDn_SwgqQyB9FaiJx16LqdKSaHEzODz-J-abwwHjjxy/exec";
 
-let ENTRY_COD = CONFIG.ENTRY_CODIGO;
-let ENTRY_COR = CONFIG.ENTRY_CORREDOR;
-let corredor = null, sessao = 0, historico = [], fila = [];
-let ultimoCodigo = "", ultimoMomento = 0, marcasTempo = [];
-let tempoTeclas = [], tDigitacao = null;
-
-const guardar = (k,v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
-const ler = (k,p) => { try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : p; }catch(e){ return p; } };
-const hoje = () => new Date().toISOString().slice(0,10);
-const agora = () => Date.now();
-
-function montarCorredores(){
-  $("corredores").innerHTML = CONFIG.CORREDORES.map((nome,i) => {
-    const rej = /rejeito/i.test(nome);
-    const n = rej ? "✕" : (nome.match(/\d+/) || [i+1])[0];
-    const extra = (nome.match(/\((.+)\)/) || [])[1] || "";
-    const curto = nome.replace(/\s*\(.+\)/,"");
-    return `<button class="corredor${rej ? " rej" : ""}" aria-pressed="false"
-        data-valor="${nome.replace(/"/g,'&quot;')}">
-        <span class="n">${n}</span>
-        <span class="t">${curto}${extra ? `<small>${extra}</small>` : ""}</span></button>`;
-  }).join("");
-}
-
-function marcar(valor){
-  corredor = valor;
-  document.querySelectorAll(".corredor").forEach(b =>
-    b.setAttribute("aria-pressed", String(b.dataset.valor === valor)));
-  const rej = valor && /rejeito/i.test(valor);
-  $("barra").classList.toggle("ativa", !!valor && !rej);
-  $("barra").classList.toggle("rejeito", !!rej);
-  $("barraTexto").innerHTML = valor
-    ? `Bipando em <b>${valor}</b>`
-    : "Escolha o corredor para liberar o bipe";
-  $("caixaBipe").classList.toggle("pronto", !!valor);
-  if (valor) guardar("wt_corredor", valor);
-}
-
-let som = ler("wt_som", true);
-function pintarSom(){ $("btnSom").textContent = som ? "🔊" : "🔇"; $("btnSom").setAttribute("aria-pressed", String(som)); }
-
-let ctxAudio = null;
-function bipe(tipo){
-  if (CONFIG.VIBRAR && navigator.vibrate)
-    navigator.vibrate(tipo === "ok" ? 45 : tipo === "aviso" ? [30,40,30] : [80,60,80]);
-  if (!som || !CONFIG.SOM) return;
-  try{
-    ctxAudio = ctxAudio || new (window.AudioContext || window.webkitAudioContext)();
-    if (ctxAudio.state === "suspended") ctxAudio.resume();
-    const o = ctxAudio.createOscillator(), g = ctxAudio.createGain();
-    o.connect(g); g.connect(ctxAudio.destination);
-    o.type = "square";
-    o.frequency.value = tipo === "ok" ? 1320 : tipo === "aviso" ? 760 : 300;
-    g.gain.setValueAtTime(.06, ctxAudio.currentTime);
-    g.gain.exponentialRampToValueAtTime(.0001, ctxAudio.currentTime + .12);
-    o.start(); o.stop(ctxAudio.currentTime + .13);
-  }catch(e){}
-}
-
-let tFlash, tToast;
-function piscar(tipo){
-  const f = $("flash");
-  f.classList.toggle("ruim", tipo !== "ok");
-  f.classList.add("ver");
-  clearTimeout(tFlash);
-  tFlash = setTimeout(() => f.classList.remove("ver"), 110);
-}
-
-function toast(texto, tipo = "ok", codigo = ""){
-  $("toastIcone").textContent = tipo === "ok" ? "✓" : tipo === "aviso" ? "!" : "✕";
-  $("toastTexto").innerHTML = codigo ? `${texto} <span class="c">${codigo}</span>` : texto;
-  const t = $("toast");
-  t.classList.remove("ruim","aviso");
-  if (tipo !== "ok") t.classList.add(tipo === "aviso" ? "aviso" : "ruim");
-  t.classList.add("ver");
-  clearTimeout(tToast);
-  tToast = setTimeout(() => t.classList.remove("ver"), 1500);
-}
-
-function recusar(texto){
-  $("msg").textContent = texto; $("msg").className = "msg ver ruim";
-  $("caixaBipe").classList.add("erro");
-  setTimeout(() => $("caixaBipe").classList.remove("erro"), 300);
-  bipe("erro"); piscar("erro"); toast(texto, "erro");
-  focar();
-}
-
-function atualizarPlacar(){
-  const c = ler("wt_contador", {dia:hoje(), n:0});
-  if (c.dia !== hoje()){ c.dia = hoje(); c.n = 0; guardar("wt_contador", c); }
-  $("pHoje").textContent = c.n;
-  $("pSessao").textContent = sessao;
-  marcasTempo = marcasTempo.filter(t => agora() - t < 60000);
-  $("pMin").textContent = marcasTempo.length;
-  $("fila").textContent = fila.length ? `${fila.length} na fila` : "";
-}
-
-function desenharLista(){
-  if (!historico.length){ $("lista").innerHTML = `<p class="nada">Nenhum bipe ainda.</p>`; return; }
-  $("lista").innerHTML = historico.slice(0,15).map(h => `
-    <div class="item${h.espera ? " espera" : ""}">
-      <span class="st">${h.espera ? "⏳" : "✓"}</span>
-      <div><div class="cod">${h.codigo}</div><div class="cor">${h.corredor}</div></div>
-      <span class="hora">${h.hora}</span>
-    </div>`).join("");
-}
-
-function postar(codigo, corr){
-  const f = document.createElement("form");
-  f.action = URL_ENVIO; 
-  f.method = "POST"; 
-  f.target = "envio"; 
-  f.style.display = "none";
-  
-  [[ENTRY_COD, codigo], [ENTRY_COR, corr]].forEach(([n,v]) => {
-    const i = document.createElement("input");
-    i.type = "hidden"; i.name = n; i.value = v; f.appendChild(i);
-  });
-  
-  document.body.appendChild(f);
-  f.submit();
-  setTimeout(() => f.remove(), 800);
-}
-
-function escoarFila(){
-  if (!fila.length || !navigator.onLine) return;
-  const lote = [...fila]; fila = []; guardar("wt_fila", fila);
-  lote.forEach((it, i) => setTimeout(() => postar(it.codigo, it.corredor), i * 350));
-  historico.forEach(h => { if (h.espera) h.espera = false; });
-  guardar("wt_historico", historico);
-  desenharLista(); atualizarPlacar();
-  toast(`${lote.length} bipe(s) enviados`, "ok");
-}
-
-function registrar(codigo){
-  const offline = !navigator.onLine;
-
-  if (offline){
-    fila.push({codigo, corredor}); guardar("wt_fila", fila);
-  } else {
-    postar(codigo, corredor);
-  }
-
-  const c = ler("wt_contador", {dia:hoje(), n:0});
-  if (c.dia !== hoje()){ c.dia = hoje(); c.n = 0; }
-  c.n++; guardar("wt_contador", c);
-  sessao++; marcasTempo.push(agora());
-
-  historico.unshift({
-    codigo, corredor, espera: offline,
-    hora: new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"})
-  });
-  historico = historico.slice(0,40);
-  guardar("wt_historico", historico);
-
-  desenharLista(); atualizarPlacar();
-  bipe("ok"); piscar("ok");
-  toast(offline ? "Salvo, envia ao voltar a rede" : "Registrado", offline ? "aviso" : "ok", codigo);
-}
-
-function processar(){
-  clearTimeout(tDigitacao);
-  const textoBruto = $("codigo").value.trim().toUpperCase();
-  if (!textoBruto) return;
-
-  $("msg").classList.remove("ver");
-
-  if (!corredor){ $("codigo").value = ""; return recusar("Escolha o corredor antes de bipar."); }
-
-  let codigosFinais = [];
-  
-  textoBruto.split(/\s+/).forEach(pedaco => {
-    let blocos = pedaco.match(/([A-Z0-9]{9,14})(?=[A-Z0-9]|$)/g);
+// 1. FUNÇÃO PARA PUXAR OS DADOS DA PLANILHA
+async function atualizarDashboard() {
+  try {
+    const resposta = await fetch(API_URL);
+    const dados = await resposta.json();
     
-    if (blocos && blocos.length > 1) {
-      codigosFinais.push(...blocos);
-    } else {
-      if (pedaco.length >= CONFIG.MIN_CARACTERES) codigosFinais.push(pedaco);
+    if (dados.registros) {
+      renderizarTabela(dados.registros);
+      calcularEstatisticas(dados.registros);
+    }
+  } catch (erro) {
+    console.error("Erro de conexão com a planilha:", erro);
+  }
+}
+
+function calcularEstatisticas(registros) {
+  let erros = 0;
+  let aguardando = 0;
+
+  registros.forEach(reg => {
+    let alerta = (reg.alerta || "").toString().toUpperCase();
+    if (alerta.includes("INVÁLIDA") || alerta.includes("INCOMPLETO") || alerta.includes("INCOMPLETA")) {
+      erros++;
+    } else if (alerta.includes("AGUARDANDO")) {
+      aguardando++;
     }
   });
 
-  if (codigosFinais.length === 0) return recusar("Código muito curto.");
+  document.getElementById("countTotal").textContent = registros.length;
+  document.getElementById("countErro").textContent = erros;
+  document.getElementById("countAguarda").textContent = aguardando;
+}
 
-  if (codigosFinais.length === 1 && codigosFinais[0] === ultimoCodigo && agora() - ultimoMomento < CONFIG.ANTI_DUPLICADO){
-    $("codigo").value = "";
-    bipe("aviso"); toast("Bipe repetido, ignorado", "aviso", codigosFinais[0]);
-    return focar();
+function renderizarTabela(registros) {
+  const tbody = document.getElementById("corpoTabela");
+  tbody.innerHTML = ""; // Limpa a tabela
+
+  if (registros.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="carregando">Nenhum dado encontrado na planilha.</td></tr>`;
+    return;
   }
-  
-  codigosFinais.forEach((cod, index) => {
-      setTimeout(() => registrar(cod), index * 200);
+
+  // Pega os 50 mais recentes (lendo de baixo pra cima, já que a planilha insere no topo)
+  const itensParaMostrar = registros.slice(0, 50);
+
+  itensParaMostrar.forEach(reg => {
+    let tr = document.createElement("tr");
+    
+    let classeAlerta = "";
+    let alerta = (reg.alerta || "").toString().toUpperCase();
+    if (alerta.includes("INVÁLIDA") || alerta.includes("INCOMPLETO") || alerta.includes("INCOMPLETA")) {
+      classeAlerta = "status-erro";
+    } else if (alerta.includes("AGUARDANDO")) {
+      classeAlerta = "status-aguardando";
+    }
+
+    tr.innerHTML = `
+      <td style="color: var(--fraco);">${reg.data}</td>
+      <td style="font-weight: 700;">${reg.codigo}</td>
+      <td>${reg.corredor}</td>
+      <td class="${classeAlerta}">${reg.alerta}</td>
+      <td style="color: var(--verde); font-weight: bold;">${reg.dia}</td>
+    `;
+    tbody.appendChild(tr);
   });
-  
-  ultimoCodigo = codigosFinais[codigosFinais.length - 1];
-  ultimoMomento = agora();
-  
-  $("codigo").value = "";
-  tempoTeclas = [];
-  focar();
 }
 
-function focar(){
-  const i = $("codigo");
-  if (document.activeElement !== i) i.focus({preventScroll:true});
+// 2. FUNÇÕES DA ZONA DE MELHORIA
+function abrirModal() {
+  document.getElementById("modalOverlay").style.display = "grid";
+  document.getElementById("textoMelhoria").focus();
 }
 
-$("btnEnviar").addEventListener("click", () => {
-  processar();
-});
+function fecharModal() {
+  document.getElementById("modalOverlay").style.display = "none";
+  document.getElementById("textoMelhoria").value = "";
+}
 
-$("codigo").addEventListener("keydown", e => {
-  if (e.key === "Enter" || e.key === "Tab"){ e.preventDefault(); processar(); return; }
-  tempoTeclas.push(agora());
-  if (tempoTeclas.length > 8) tempoTeclas.shift();
-});
+async function enviarMelhoria() {
+  const texto = document.getElementById("textoMelhoria").value.trim();
+  if (!texto) return alert("Digite algo antes de enviar!");
 
-$("codigo").addEventListener("input", () => {
-  $("msg").classList.remove("ver");
-  clearTimeout(tDigitacao);
-  const v = $("codigo").value.trim();
-  if (v.length < CONFIG.MIN_CARACTERES) return;
+  const btn = document.getElementById("btnEnviar");
+  btn.textContent = "Enviando...";
+  btn.disabled = true;
 
-  const rapido = tempoTeclas.length >= 4 &&
-    (tempoTeclas[tempoTeclas.length-1] - tempoTeclas[0]) / (tempoTeclas.length-1) < 45;
-  if (rapido) tDigitacao = setTimeout(processar, CONFIG.PAUSA_COLETOR);
-});
+  try {
+    await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ tipo: "melhoria", texto: texto })
+    });
+    
+    alert("Melhoria enviada para a aba MELHORIAS com sucesso!");
+    fecharModal();
+  } catch (erro) {
+    alert("Erro ao enviar. Tente novamente.");
+    console.error(erro);
+  } finally {
+    btn.textContent = "Enviar Ideia";
+    btn.disabled = false;
+  }
+}
 
-$("corredores").addEventListener("click", e => {
-  const b = e.target.closest(".corredor");
-  if (b){ marcar(b.dataset.valor); bipe("aviso"); focar(); }
-});
-
-$("btnSom").addEventListener("click", () => { som = !som; guardar("wt_som", som); pintarSom(); focar(); });
-$("btnLimpaHist").addEventListener("click", () => {
-  historico = historico.filter(h => h.espera); guardar("wt_historico", historico); desenharLista();
-});
-
-document.addEventListener("click", e => {
-  if (!e.target.closest("button") && !e.target.closest("input")) focar();
-});
-$("codigo").addEventListener("blur", () => setTimeout(focar, 60));
-document.addEventListener("keydown", e => {
-  if (e.key.length === 1 && document.activeElement !== $("codigo")
-      && !["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) focar();
-});
-
-window.addEventListener("online", escoarFila);
-window.addEventListener("offline", () => toast("Sem rede — bipes ficam na fila", "aviso"));
-
-montarCorredores();
-pintarSom();
-historico = ler("wt_historico", []);
-fila = ler("wt_fila", []);
-desenharLista();
-atualizarPlacar();
-setInterval(atualizarPlacar, 5000);
-const ultimoCor = ler("wt_corredor", null);
-if (ultimoCor && CONFIG.CORREDORES.includes(ultimoCor)) marcar(ultimoCor); else marcar(null);
-escoarFila();
-setTimeout(focar, 300);
+// Inicia o carregamento e define a atualização a cada 10 segundos
+atualizarDashboard();
+setInterval(atualizarDashboard, 10000);
 </script>
 </body>
 </html>
