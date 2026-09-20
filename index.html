@@ -287,17 +287,40 @@ async function guardarConfiguracoes() {
 }
 
 async function solicitarAlteracaoAdmin() {
-  alert("A enviar código de verificação para dinizalessandro537@gmail.com...");
-  await fetch(API_URL, { method: "POST", body: JSON.stringify({ tipo: "enviar_codigo_admin" }) });
+  alert("Enviando código de verificação para dinizalessandro537@gmail.com...");
   
-  let codigoDigitado = prompt("Verifique o seu e-mail e digite o código de 6 dígitos recebido:");
-  // Como é um processo complexo, para simplificar a interface, a validação do PIN e troca 
-  // pode ser feita diretamente pela folha de cálculo se o prompt falhar, mas deixo o fluxo iniciado.
-  alert("Funcionalidade de alteração com PIN iniciada no backend. Se validado, a palavra-passe muda.");
-}
+  try {
+    // Pede pra planilha enviar o e-mail
+    await fetch(API_URL, { method: "POST", body: JSON.stringify({ tipo: "enviar_codigo_admin" }) });
+    
+    // Abre a caixinha pedindo o código
+    let codigoDigitado = prompt("Verifique o seu e-mail e digite o código de 6 dígitos recebido:");
+    if (!codigoDigitado) return; 
+    
+    // Abre a caixinha pedindo a nova senha
+    let novaSenha = prompt("Código aceito! Agora digite a sua NOVA senha de Administrador:");
+    if (!novaSenha) return;
 
-atualizarDashboard();
-setInterval(atualizarDashboard, 15000);
-</script>
-</body>
-</html>
+    // Envia tudo pra planilha validar
+    const res = await fetch(API_URL, { 
+      method: "POST", 
+      body: JSON.stringify({ 
+        tipo: "validar_pin_e_trocar_senha", 
+        pin: codigoDigitado,
+        novaSenha: novaSenha
+      }) 
+    });
+    
+    const retorno = await res.json();
+
+    if (retorno.sucesso) {
+      alert("Senha de Administrador alterada com sucesso! Da próxima vez, use a nova senha.");
+      configsGlobais.SENHA_ADMIN = novaSenha; // Atualiza no painel na hora
+      fecharModais();
+    } else {
+      alert("Erro: " + retorno.erro);
+    }
+  } catch (e) {
+    alert("Falha na comunicação com o servidor.");
+  }
+}
