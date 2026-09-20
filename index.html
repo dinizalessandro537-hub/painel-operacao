@@ -22,20 +22,28 @@ header { display: flex; justify-content: space-between; align-items: center; bac
 .card { background: var(--preto-2); border: 1px solid var(--borda); border-radius: 12px; padding: 20px; text-align: center; }
 .card h2 { font-size: 12px; color: var(--fraco); text-transform: uppercase; margin-bottom: 5px;}
 .card .valor { font-size: 32px; font-weight: 900; font-family: "Roboto Mono", monospace; color: var(--amarelo); }
+
+/* Gráficos */
+.graficos-container { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 20px; }
+.grafico-box { background: var(--preto-2); border: 1px solid var(--borda); border-radius: 12px; padding: 20px; height: 250px; display: flex; justify-content: center; align-items: center; }
+
 .pesquisa-container { margin-bottom: 20px; display: flex; gap: 10px; }
-.pesquisa-container input { flex: 1; background: var(--preto-2); color: #fff; border: 1px solid var(--borda); border-radius: 12px; padding: 15px 20px; font-size: 16px; font-family: inherit; }
-.tabela-container { background: var(--preto-2); border: 1px solid var(--borda); border-radius: 12px; overflow-x: auto; max-height: 600px; }
+.pesquisa-container input { flex: 1; background: var(--preto-2); color: #fff; border: 1px solid var(--borda); border-radius: 12px; padding: 15px 20px; font-size: 16px; font-family: inherit; outline: none;}
+.pesquisa-container input:focus { border-color: var(--amarelo); }
+.tabela-container { background: var(--preto-2); border: 1px solid var(--borda); border-radius: 12px; overflow-x: auto; max-height: 500px; }
 table { width: 100%; border-collapse: collapse; text-align: left; }
 th { background: var(--preto-3); color: var(--fraco); padding: 15px; font-size: 12px; text-transform: uppercase; position: sticky; top: 0; }
 td { padding: 15px; border-bottom: 1px solid var(--borda); font-family: "Roboto Mono", monospace; }
 .linha-hoje { background-color: rgba(0, 200, 83, 0.08); border-left: 4px solid var(--verde); }
 .status-erro { color: var(--vermelho); font-weight: 700; }
 .status-aguardando { color: var(--amarelo); font-weight: 500; }
+
+/* Modais */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; place-items: center; z-index: 100; }
 .modal { background: var(--preto-2); padding: 25px; border-radius: 12px; width: 90%; max-width: 450px; border: 1px solid var(--borda); }
 .modal h2 { margin-bottom: 15px; color: var(--amarelo); }
-.modal input, .modal textarea { width: 100%; background: var(--preto-3); border: 1px solid var(--borda); color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
-.modal textarea { height: 120px; resize: none; }
+.modal input, .modal textarea { width: 100%; background: var(--preto-3); border: 1px solid var(--borda); color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 15px; outline: none; }
+.modal textarea { height: 120px; resize: none; font-family: inherit; }
 .modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
 .modal-btns button { padding: 10px 15px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
 .btn-cancelar { background: var(--preto-3); color: #fff; }
@@ -43,33 +51,47 @@ td { padding: 15px; border-bottom: 1px solid var(--borda); font-family: "Roboto 
 .lista-notas { max-height: 200px; overflow-y: auto; background: var(--preto-3); padding: 10px; border-radius: 8px; margin-bottom: 15px; }
 .nota-item { border-bottom: 1px solid var(--borda); padding-bottom: 8px; margin-bottom: 8px; font-size: 12px; }
 .nada-encontrado { text-align: center; padding: 40px; color: var(--vermelho); font-weight: bold; font-size: 16px; }
+
+@media (max-width: 768px) {
+  .graficos-container { grid-template-columns: 1fr; }
+  .cards { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
   <header>
     <div class="logo-area">
-      <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.19.1/mercadolibre/logo__small@2x.png" alt="Logo">
+      <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.19.1/mercadolibre/logo__small@2x.png" alt="Logo Mercado Livre">
       <div class="titulo">
         <h1>Monitorização WT</h1>
         <span>PACKING T1 - Atualização ao vivo 🟢</span>
       </div>
     </div>
     <div class="topo-direito">
-      <div class="qr-container" onclick="mostrarQRGrande()">
+      <div class="qr-container" onclick="mostrarQRGrande()" title="Abrir Formulário">
         <img id="imgQR" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="QR Code Forms">
       </div>
     </div>
   </header>
 
   <div class="cards">
-    <div class="card"><h2>Registos Encontrados</h2><div class="valor" id="countTotal">-</div></div>
+    <div class="card"><h2>Registos Filtrados</h2><div class="valor" id="countTotal">-</div></div>
     <div class="card erro"><h2>Erros / Inválidos</h2><div class="valor" id="countErro">-</div></div>
     <div class="card ok" style="color:var(--verde)"><h2>Dia de Hoje</h2><div class="valor" id="countHoje">-</div></div>
   </div>
 
+  <div class="graficos-container">
+    <div class="grafico-box">
+      <canvas id="graficoStatus"></canvas>
+    </div>
+    <div class="grafico-box">
+      <canvas id="graficoCorredores"></canvas>
+    </div>
+  </div>
+
   <div class="pesquisa-container">
-    <input type="text" id="campoPesquisa" placeholder="Pesquisar MELI, Corredor... (Dica: tente escrever 'NOTAS')" oninput="verificarSegredos()">
+    <input type="text" id="campoPesquisa" placeholder="Pesquisar MELI, Corredor... (Dica secreta: escreva 'NOTAS' ou 'ADMIM')" oninput="verificarSegredos()">
   </div>
 
   <div class="tabela-container">
@@ -79,7 +101,6 @@ td { padding: 15px; border-bottom: 1px solid var(--borda); font-family: "Roboto 
     </table>
   </div>
 
-  <!-- MODAL: LOGIN NOTAS -->
   <div class="modal-overlay" id="modalLoginNotas">
     <div class="modal">
       <h2>Área Secreta: Bloco de Notas</h2>
@@ -91,12 +112,11 @@ td { padding: 15px; border-bottom: 1px solid var(--borda); font-family: "Roboto 
     </div>
   </div>
 
-  <!-- MODAL: BLOCO DE NOTAS (SÓ ABRE SE A SENHA ESTIVER CERTA) -->
   <div class="modal-overlay" id="modalNotasApp">
     <div class="modal">
       <h2>Bloco de Notas da Operação</h2>
       <div class="lista-notas" id="historicoNotas">A carregar histórico...</div>
-      <textarea id="textoNovaNota" placeholder="Descreva o erro (Ex: MELI123 com embalagem rasgada no corredor 2)"></textarea>
+      <textarea id="textoNovaNota" placeholder="Descreva o erro (Ex: MELI123 com embalagem rasgada)"></textarea>
       <div class="modal-btns">
         <button class="btn-cancelar" onclick="fecharModais()">Fechar</button>
         <button class="btn-enviar" onclick="salvarNovaNota()">Guardar Nota</button>
@@ -104,7 +124,6 @@ td { padding: 15px; border-bottom: 1px solid var(--borda); font-family: "Roboto 
     </div>
   </div>
 
-  <!-- MODAL: ADMIN LOGIN -->
   <div class="modal-overlay" id="modalLoginAdmin">
     <div class="modal">
       <h2>Modo Administrador</h2>
@@ -116,7 +135,6 @@ td { padding: 15px; border-bottom: 1px solid var(--borda); font-family: "Roboto 
     </div>
   </div>
 
-  <!-- MODAL: PAINEL ADMIN -->
   <div class="modal-overlay" id="modalPainelAdmin">
     <div class="modal">
       <h2>Gerir Painel</h2>
@@ -126,7 +144,7 @@ td { padding: 15px; border-bottom: 1px solid var(--borda); font-family: "Roboto 
       <p style="font-size:12px; color:var(--fraco); margin-top:15px; margin-bottom:10px;">Alterar Senha do Bloco de Notas:</p>
       <input type="text" id="inputNovaSenhaNotas" placeholder="Nova palavra-passe das notas">
       
-      <button class="btn-cancelar" style="width:100%; margin-top:15px;" onclick="solicitarAlteracaoAdmin()">Mudar Senha Admin (Enviar E-mail)</button>
+      <button class="btn-cancelar" style="width:100%; margin-top:15px; border: 1px solid var(--borda);" onclick="solicitarAlteracaoAdmin()">Mudar Senha Admin (Via E-mail)</button>
 
       <div class="modal-btns" style="margin-top:20px;">
         <button class="btn-cancelar" onclick="fecharModais()">Sair</button>
@@ -136,12 +154,16 @@ td { padding: 15px; border-bottom: 1px solid var(--borda); font-family: "Roboto 
   </div>
 
 <script>
-// O SEU LINK DA API (Certifique-se que é o correto gerado pelo Apps Script)
+// O SEU LINK DA API DO APPS SCRIPT
 const API_URL = "https://script.google.com/macros/s/AKfycbyclDr0_4nQ_sx17df4YS7rXqDn_SwgqQyB9FaiJx16LqdKSaHEzODz-J-abwwHjjxy/exec";
 
 let dadosGlobais = [];
 let configsGlobais = {};
 let notasGlobais = [];
+let chartStatus = null;
+let chartCorredores = null;
+
+Chart.defaults.color = '#8E8E8E';
 
 async function atualizarDashboard() {
   try {
@@ -149,7 +171,7 @@ async function atualizarDashboard() {
     const dados = await resposta.json();
     if (dados.registros) {
       dadosGlobais = dados.registros;
-      configsGlobais = dados.configuracoes || {}; // Garante que não dá erro se vier vazio
+      configsGlobais = dados.configuracoes || {}; 
       notasGlobais = dados.notas || [];
       
       document.getElementById('imgQR').src = configsGlobais.QR_CODE_URL || "https://i.imgur.com/vHq0Aeb.jpg";
@@ -164,9 +186,11 @@ function verificarSegredos() {
   if (termo === "NOTAS") {
     document.getElementById("campoPesquisa").value = "";
     document.getElementById("modalLoginNotas").style.display = "grid";
+    document.getElementById("senhaNotasInput").focus();
   } else if (termo === "ADMIM" || termo === "ADMIN") {
     document.getElementById("campoPesquisa").value = "";
     document.getElementById("modalLoginAdmin").style.display = "grid";
+    document.getElementById("senhaAdminInput").focus();
   } else {
     filtrarPesquisa();
   }
@@ -184,6 +208,7 @@ function filtrarPesquisa() {
     );
   }
 
+  // Priorizar "HOJE" no topo
   filtrados.sort((a, b) => {
     let diaA = (a.dia||"").toUpperCase(); let diaB = (b.dia||"").toUpperCase();
     if (diaA === "HOJE" && diaB !== "HOJE") return -1;
@@ -197,7 +222,8 @@ function filtrarPesquisa() {
 function renderizarTabela(registros, termoPesquisa) {
   const tbody = document.getElementById("corpoTabela");
   tbody.innerHTML = ""; 
-  let erros = 0; let hoje = 0;
+  let erros = 0; let hoje = 0; let aguardando = 0;
+  let corretoresContagem = {};
   
   if (registros.length === 0) {
     tbody.innerHTML = `<tr><td colspan="5" class="nada-encontrado">Nenhum registo encontrado para "${termoPesquisa}".</td></tr>`;
@@ -206,11 +232,18 @@ function renderizarTabela(registros, termoPesquisa) {
       let tr = document.createElement("tr");
       let alertaUpper = (reg.alerta||"").toUpperCase();
       let diaUpper = (reg.dia||"").toUpperCase();
+      let corredorUpper = (reg.corredor||"").toUpperCase();
       
-      if (alertaUpper.includes("INVÁLIDA") || alertaUpper.includes("INCOMPLET")) erros++;
+      if (alertaUpper.includes("INVÁLIDA") || alertaUpper.includes("INCOMPLET")) { erros++; }
+      else if (alertaUpper.includes("AGUARDANDO")) { aguardando++; }
+
       if (diaUpper === "HOJE") {
         hoje++;
         tr.classList.add("linha-hoje");
+      }
+
+      if (corredorUpper) {
+        corretoresContagem[corredorUpper] = (corretoresContagem[corredorUpper] || 0) + 1;
       }
 
       tr.innerHTML = `
@@ -227,6 +260,37 @@ function renderizarTabela(registros, termoPesquisa) {
   document.getElementById("countTotal").textContent = registros.length;
   document.getElementById("countErro").textContent = erros;
   document.getElementById("countHoje").textContent = hoje;
+
+  desenharGraficos(erros, aguardando, corretoresContagem);
+}
+
+function desenharGraficos(erros, aguardando, corretoresContagem) {
+  // Gráfico Status (Rosca)
+  const ctxStatus = document.getElementById('graficoStatus').getContext('2d');
+  if (chartStatus) chartStatus.destroy();
+  chartStatus = new Chart(ctxStatus, {
+    type: 'doughnut',
+    data: {
+      labels: ['Aguardando', 'Erros/Inválidas'],
+      datasets: [{ data: [aguardando, erros], backgroundColor: ['#FFE600', '#FF4444'], borderWidth: 0, hoverOffset: 4 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, title: { display: true, text: 'Visão Geral de Status', color: '#F5F5F5' } } }
+  });
+
+  // Gráfico Corredores (Barras)
+  const labelsCorredores = Object.keys(corretoresContagem);
+  const dataCorredores = Object.values(corretoresContagem);
+  
+  const ctxCorredores = document.getElementById('graficoCorredores').getContext('2d');
+  if (chartCorredores) chartCorredores.destroy();
+  chartCorredores = new Chart(ctxCorredores, {
+    type: 'bar',
+    data: {
+      labels: labelsCorredores.length ? labelsCorredores : ['Sem dados'],
+      datasets: [{ label: 'Bipes', data: dataCorredores.length ? dataCorredores : [0], backgroundColor: '#FFE600', borderRadius: 4 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: '#343434' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false }, title: { display: true, text: 'Concentração por Corredor', color: '#F5F5F5' } } }
+  });
 }
 
 function fecharModais() {
@@ -240,10 +304,8 @@ function mostrarQRGrande() {
 }
 
 function validarSenhaNotas() {
-  if (!configsGlobais.SENHA_NOTAS) {
-    alert("A ligar à planilha... Tente novamente em 2 segundos.");
-    return;
-  }
+  if (!configsGlobais.SENHA_NOTAS) return alert("A ligar à planilha... Tente novamente em 2 segundos.");
+  
   if (document.getElementById("senhaNotasInput").value === configsGlobais.SENHA_NOTAS.toString()) {
     document.getElementById("modalLoginNotas").style.display = "none";
     document.getElementById("modalNotasApp").style.display = "grid";
@@ -251,10 +313,8 @@ function validarSenhaNotas() {
 }
 
 function validarSenhaAdmin() {
-  if (!configsGlobais.SENHA_ADMIN) {
-    alert("Erro de ligação: A Planilha ainda não enviou a senha secreta. Confirme se publicou a 'Nova Versão' no Apps Script!");
-    return;
-  }
+  if (!configsGlobais.SENHA_ADMIN) return alert("Erro de ligação: A Planilha ainda não enviou a palavra-passe secreta. Confirme se publicou a 'Nova Versão' no Apps Script!");
+  
   if (document.getElementById("senhaAdminInput").value === configsGlobais.SENHA_ADMIN.toString()) {
     document.getElementById("modalLoginAdmin").style.display = "none";
     document.getElementById("inputLinkQR").value = configsGlobais.QR_CODE_URL || "";
@@ -275,26 +335,40 @@ function preencherHistoricoNotas() {
 async function salvarNovaNota() {
   const txt = document.getElementById("textoNovaNota").value;
   if (!txt) return;
-  await fetch(API_URL, { method: "POST", body: JSON.stringify({ tipo: "nova_nota", texto: txt }) });
-  document.getElementById("textoNovaNota").value = "";
-  alert("Nota guardada na planilha com sucesso!");
-  atualizarDashboard(); 
+  
+  const btn = document.querySelector("#modalNotasApp .btn-enviar");
+  btn.textContent = "A Guardar..."; btn.disabled = true;
+
+  try {
+    await fetch(API_URL, { method: "POST", body: JSON.stringify({ tipo: "nova_nota", texto: txt }) });
+    document.getElementById("textoNovaNota").value = "";
+    alert("Nota guardada na planilha com sucesso!");
+    atualizarDashboard(); 
+  } catch(e) { alert("Erro ao guardar nota."); }
+  
+  btn.textContent = "Guardar Nota"; btn.disabled = false;
 }
 
 async function guardarConfiguracoes() {
   const novoQR = document.getElementById("inputLinkQR").value;
   const novaSenhaNotas = document.getElementById("inputNovaSenhaNotas").value;
   
-  if (novoQR !== configsGlobais.QR_CODE_URL) {
-    await fetch(API_URL, { method: "POST", body: JSON.stringify({ tipo: "atualizar_config", chave: "QR_CODE_URL", valor: novoQR }) });
-  }
-  if (novaSenhaNotas !== configsGlobais.SENHA_NOTAS) {
-    await fetch(API_URL, { method: "POST", body: JSON.stringify({ tipo: "atualizar_config", chave: "SENHA_NOTAS", valor: novaSenhaNotas }) });
-  }
+  const btn = document.querySelector("#modalPainelAdmin .btn-enviar");
+  btn.textContent = "A Guardar..."; btn.disabled = true;
+
+  try {
+    if (novoQR !== configsGlobais.QR_CODE_URL) {
+      await fetch(API_URL, { method: "POST", body: JSON.stringify({ tipo: "atualizar_config", chave: "QR_CODE_URL", valor: novoQR }) });
+    }
+    if (novaSenhaNotas !== configsGlobais.SENHA_NOTAS) {
+      await fetch(API_URL, { method: "POST", body: JSON.stringify({ tipo: "atualizar_config", chave: "SENHA_NOTAS", valor: novaSenhaNotas }) });
+    }
+    alert("Configurações atualizadas com sucesso!");
+    fecharModais();
+    atualizarDashboard();
+  } catch(e) { alert("Erro ao atualizar configurações."); }
   
-  alert("Configurações atualizadas!");
-  fecharModais();
-  atualizarDashboard();
+  btn.textContent = "Guardar Alterações"; btn.disabled = false;
 }
 
 async function solicitarAlteracaoAdmin() {
@@ -325,5 +399,9 @@ async function solicitarAlteracaoAdmin() {
   }
 }
 
+// Iniciação
 atualizarDashboard();
 setInterval(atualizarDashboard, 15000);
+</script>
+</body>
+</html>
