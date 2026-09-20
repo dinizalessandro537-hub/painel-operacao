@@ -136,7 +136,9 @@ td { padding: 15px; border-bottom: 1px solid var(--borda); font-family: "Roboto 
   </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyclDr0_4nQ_sx17df4YS7rXqDn_SwgqQyB9FaiJx16LqdKSaHEzODz-J-abwwHjjxy/exec"; // TEM DE GARANTIR QUE ESTE LINK ESTÁ ATUALIZADO APÓS A NOVA IMPLEMENTAÇÃO
+// O SEU LINK DA API (Certifique-se que é o correto gerado pelo Apps Script)
+const API_URL = "https://script.google.com/macros/s/AKfycbyclDr0_4nQ_sx17df4YS7rXqDn_SwgqQyB9FaiJx16LqdKSaHEzODz-J-abwwHjjxy/exec";
+
 let dadosGlobais = [];
 let configsGlobais = {};
 let notasGlobais = [];
@@ -147,14 +149,14 @@ async function atualizarDashboard() {
     const dados = await resposta.json();
     if (dados.registros) {
       dadosGlobais = dados.registros;
-      configsGlobais = dados.configuracoes;
-      notasGlobais = dados.notas;
+      configsGlobais = dados.configuracoes || {}; // Garante que não dá erro se vier vazio
+      notasGlobais = dados.notas || [];
       
-      document.getElementById('imgQR').src = configsGlobais.QR_CODE_URL || "https://i.imgur.com/vHq0Aeb.jpg"; // URL fallback[cite: 12]
+      document.getElementById('imgQR').src = configsGlobais.QR_CODE_URL || "https://i.imgur.com/vHq0Aeb.jpg";
       filtrarPesquisa();
       preencherHistoricoNotas();
     }
-  } catch (erro) { console.error("Erro:", erro); }
+  } catch (erro) { console.error("Erro na sincronização:", erro); }
 }
 
 function verificarSegredos() {
@@ -162,7 +164,7 @@ function verificarSegredos() {
   if (termo === "NOTAS") {
     document.getElementById("campoPesquisa").value = "";
     document.getElementById("modalLoginNotas").style.display = "grid";
-  } else if (termo === "ADMIM") {
+  } else if (termo === "ADMIM" || termo === "ADMIN") {
     document.getElementById("campoPesquisa").value = "";
     document.getElementById("modalLoginAdmin").style.display = "grid";
   } else {
@@ -182,7 +184,6 @@ function filtrarPesquisa() {
     );
   }
 
-  // Priorizar "HOJE" no topo
   filtrados.sort((a, b) => {
     let diaA = (a.dia||"").toUpperCase(); let diaB = (b.dia||"").toUpperCase();
     if (diaA === "HOJE" && diaB !== "HOJE") return -1;
@@ -196,7 +197,6 @@ function filtrarPesquisa() {
 function renderizarTabela(registros, termoPesquisa) {
   const tbody = document.getElementById("corpoTabela");
   tbody.innerHTML = ""; 
-
   let erros = 0; let hoje = 0;
   
   if (registros.length === 0) {
@@ -210,7 +210,7 @@ function renderizarTabela(registros, termoPesquisa) {
       if (alertaUpper.includes("INVÁLIDA") || alertaUpper.includes("INCOMPLET")) erros++;
       if (diaUpper === "HOJE") {
         hoje++;
-        tr.classList.add("linha-hoje"); // Aplica o destaque verde para o dia de hoje
+        tr.classList.add("linha-hoje");
       }
 
       tr.innerHTML = `
@@ -236,28 +236,39 @@ function fecharModais() {
 }
 
 function mostrarQRGrande() {
-  window.open(configsGlobais.QR_CODE_URL, '_blank');
+  window.open(configsGlobais.QR_CODE_URL || "https://i.imgur.com/vHq0Aeb.jpg", '_blank');
 }
 
-// LOGICAS DE SENHA E ADMIN
 function validarSenhaNotas() {
-  if (document.getElementById("senhaNotasInput").value === configsGlobais.SENHA_NOTAS) {
+  if (!configsGlobais.SENHA_NOTAS) {
+    alert("A ligar à planilha... Tente novamente em 2 segundos.");
+    return;
+  }
+  if (document.getElementById("senhaNotasInput").value === configsGlobais.SENHA_NOTAS.toString()) {
     document.getElementById("modalLoginNotas").style.display = "none";
     document.getElementById("modalNotasApp").style.display = "grid";
   } else { alert("Palavra-passe incorreta!"); }
 }
 
 function validarSenhaAdmin() {
-  if (document.getElementById("senhaAdminInput").value === configsGlobais.SENHA_ADMIN) {
+  if (!configsGlobais.SENHA_ADMIN) {
+    alert("Erro de ligação: A Planilha ainda não enviou a senha secreta. Confirme se publicou a 'Nova Versão' no Apps Script!");
+    return;
+  }
+  if (document.getElementById("senhaAdminInput").value === configsGlobais.SENHA_ADMIN.toString()) {
     document.getElementById("modalLoginAdmin").style.display = "none";
-    document.getElementById("inputLinkQR").value = configsGlobais.QR_CODE_URL;
-    document.getElementById("inputNovaSenhaNotas").value = configsGlobais.SENHA_NOTAS;
+    document.getElementById("inputLinkQR").value = configsGlobais.QR_CODE_URL || "";
+    document.getElementById("inputNovaSenhaNotas").value = configsGlobais.SENHA_NOTAS || "";
     document.getElementById("modalPainelAdmin").style.display = "grid";
-  } else { alert("Acesso negado!"); }
+  } else { alert("Acesso negado! Palavra-passe incorreta."); }
 }
 
 function preencherHistoricoNotas() {
   const div = document.getElementById("historicoNotas");
+  if (notasGlobais.length === 0) {
+    div.innerHTML = "<p style='color:var(--fraco); font-size:12px;'>Nenhuma nota registada ainda.</p>";
+    return;
+  }
   div.innerHTML = notasGlobais.map(n => `<div class="nota-item"><strong>${n.data}:</strong> ${n.texto}</div>`).join("");
 }
 
@@ -266,8 +277,8 @@ async function salvarNovaNota() {
   if (!txt) return;
   await fetch(API_URL, { method: "POST", body: JSON.stringify({ tipo: "nova_nota", texto: txt }) });
   document.getElementById("textoNovaNota").value = "";
-  atualizarDashboard(); // Recarrega para mostrar a nota
-  alert("Nota guardada na folha de cálculo!");
+  alert("Nota guardada na planilha com sucesso!");
+  atualizarDashboard(); 
 }
 
 async function guardarConfiguracoes() {
@@ -287,40 +298,32 @@ async function guardarConfiguracoes() {
 }
 
 async function solicitarAlteracaoAdmin() {
-  alert("Enviando código de verificação para dinizalessandro537@gmail.com...");
-  
+  alert("A enviar código de verificação para dinizalessandro537@gmail.com...");
   try {
-    // Pede pra planilha enviar o e-mail
     await fetch(API_URL, { method: "POST", body: JSON.stringify({ tipo: "enviar_codigo_admin" }) });
-    
-    // Abre a caixinha pedindo o código
     let codigoDigitado = prompt("Verifique o seu e-mail e digite o código de 6 dígitos recebido:");
     if (!codigoDigitado) return; 
     
-    // Abre a caixinha pedindo a nova senha
-    let novaSenha = prompt("Código aceito! Agora digite a sua NOVA senha de Administrador:");
+    let novaSenha = prompt("Código aceite! Agora digite a sua NOVA palavra-passe de Administrador:");
     if (!novaSenha) return;
 
-    // Envia tudo pra planilha validar
     const res = await fetch(API_URL, { 
       method: "POST", 
-      body: JSON.stringify({ 
-        tipo: "validar_pin_e_trocar_senha", 
-        pin: codigoDigitado,
-        novaSenha: novaSenha
-      }) 
+      body: JSON.stringify({ tipo: "validar_pin_e_trocar_senha", pin: codigoDigitado, novaSenha: novaSenha }) 
     });
     
     const retorno = await res.json();
-
     if (retorno.sucesso) {
       alert("Senha de Administrador alterada com sucesso! Da próxima vez, use a nova senha.");
-      configsGlobais.SENHA_ADMIN = novaSenha; // Atualiza no painel na hora
+      configsGlobais.SENHA_ADMIN = novaSenha; 
       fecharModais();
     } else {
       alert("Erro: " + retorno.erro);
     }
   } catch (e) {
-    alert("Falha na comunicação com o servidor.");
+    alert("Falha na comunicação com a planilha.");
   }
 }
+
+atualizarDashboard();
+setInterval(atualizarDashboard, 15000);
